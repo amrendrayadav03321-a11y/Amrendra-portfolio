@@ -1,6 +1,5 @@
 /**
- * AMRENDRA YADAV — IIT JODHPUR (1ST YEAR)
- * Systems & Creative Developer Portfolio
+ * AMRENDRA YADAV — SYSTEMS & CREATIVE DEVELOPER
  * High-Performance, Lag-Free Engine (Zero Framework Bloat)
  */
 
@@ -23,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
       accent: "cyan",
       source: `// ====================================================================
 // AETHER 3D GRAPHICS PIPELINE — BUFFER STREAM & ARENA ALLOCATOR
-// Developer: Amrendra Yadav (IIT Jodhpur) • Delhi, India
+// Developer: Amrendra Yadav • Delhi, India
 // Standards: C++17 / Modern OpenGL 4.6 Core Profile
 // ====================================================================
 
@@ -93,7 +92,7 @@ namespace Aether::Graphics {
       accent: "cyan",
       source: `// ====================================================================
 // PULSEPOOL — WORK-STEALING THREAD ENGINE
-// Developer: Amrendra Yadav (IIT Jodhpur) • Delhi, India
+// Developer: Amrendra Yadav • Delhi, India
 // Standards: C++20 Lock-Free Concurrency
 // ====================================================================
 
@@ -178,7 +177,7 @@ namespace Pulse {
       accent: "violet",
       source: `# ====================================================================
 # PYSTREAM PACKET INGESTION & ISOLATION FOREST CLASSIFIER
-# Developer: Amrendra Yadav (IIT Jodhpur) • Delhi, India
+# Developer: Amrendra Yadav • Delhi, India
 # Stack: Python 3.10+ / AsyncIO / NumPy / Scikit-Learn
 # ====================================================================
 
@@ -246,7 +245,7 @@ class PacketAnomalyEngine:
       accent: "violet",
       source: `# ====================================================================
 # JARVIS DESKTOP AUTOMATION & SPEECH RECOGNITION SYSTEM
-# Developer: Amrendra Yadav (IIT Jodhpur) • Delhi, India
+# Developer: Amrendra Yadav • Delhi, India
 # Stack: Python / Threaded Speech / Subprocess Dispatcher
 # ====================================================================
 
@@ -310,7 +309,7 @@ class JarvisAutomationCore:
       accent: "amber",
       source: `-- ====================================================================
 -- NEXUS DB ENGINE — HIGH-THROUGHPUT ANALYTIC PARTITIONING & CTEs
--- Architect: Amrendra Yadav (IIT Jodhpur) • Delhi, India
+-- Architect: Amrendra Yadav • Delhi, India
 -- Target Engine: PostgreSQL 15+ / Aurora Enterprise
 -- ====================================================================
 
@@ -366,7 +365,7 @@ ORDER BY p99_latency_micros DESC;`
       accent: "rose",
       source: `// ====================================================================
 // NEBULA ENGINE — FRAGMENT SHADER REAL-TIME FLUID DISPLACEMENT
-// Artist: Amrendra Yadav (IIT Jodhpur) • Delhi, India
+// Artist: Amrendra Yadav • Delhi, India
 // Execution: WebGL Fragment Stage
 // ====================================================================
 
@@ -432,7 +431,7 @@ void main() {
       accent: "cyan",
       source: `// ====================================================================
 // VERLET KINETIC — DETERMINISTIC TIME-STEP N-BODY SOLVER
-// Author: Amrendra Yadav (IIT Jodhpur) • Delhi, India
+// Author: Amrendra Yadav • Delhi, India
 // Standards: Modern ECMAScript / Zero-Dependency Canvas
 // ====================================================================
 
@@ -721,7 +720,7 @@ export class VerletKineticBody {
   // =========================================================================
   const decoderEl = document.getElementById("decoder-stream");
   const specializations = [
-    "IIT Jodhpur '29 • C++ Systems Architect",
+    "C++ Core Systems & Graphics Architect",
     "Python Telemetry & Machine Learning Pipelines",
     "PostgreSQL High-Scale Relational Optimizer",
     "Creative WebGL & Low-Latency Canvas UI"
@@ -843,7 +842,7 @@ export class VerletKineticBody {
 
     modalTechChips.innerHTML = `
       <span class="spec-pill"><i class="fas fa-microchip"></i> Discipline: ${p.discipline}</span>
-      <span class="spec-pill"><i class="fas fa-graduation-cap"></i> IIT Jodhpur Undergrad Project</span>
+      <span class="spec-pill"><i class="fas fa-code"></i> Handcrafted Architecture</span>
       <span class="spec-pill"><i class="fas fa-location-dot"></i> Base: Delhi, India</span>
     `;
 
@@ -895,7 +894,7 @@ export class VerletKineticBody {
   renderProjects("all");
 
   // =========================================================================
-  // 7. INTERACTIVE REPL CLI (COLLEGE & IIT JODHPUR INCLUDED)
+  // 7. INTERACTIVE REPL CLI
   // =========================================================================
   const termInput = document.getElementById("terminal-input");
   const termOutput = document.getElementById("terminal-output");
@@ -903,25 +902,17 @@ export class VerletKineticBody {
   const TERMINAL_COMMANDS = {
     help: () => `
 <span class="term-highlight">AVAILABLE COMMANDS:</span>
-  • <span class="term-cmd">college</span>      : Details about my studies at IIT Jodhpur
   • <span class="term-cmd">whoami</span>       : Profile summary & base location
   • <span class="term-cmd">skills</span>       : Technical proficiencies & stack
   • <span class="term-cmd">projects</span>     : 7 production systems with source code
   • <span class="term-cmd">contact</span>      : Direct phone, email, & social handles
-  • <span class="term-cmd">location</span>     : Campus & hometown coordinates
+  • <span class="term-cmd">location</span>     : Developer base coordinates
   • <span class="term-cmd">bench</span>        : Client execution speed benchmark
   • <span class="term-cmd">clear</span>        : Reset console screen
     `,
-    college: () => `
-<span class="term-out-success">[INSTITUTION PROFILE]</span>
-  • Institution : <strong>Indian Institute of Technology Jodhpur (IITJ)</strong>
-  • Status      : <strong>1st Year Undergraduate</strong> (B.Tech)
-  • Focus Areas : Computer Systems, Compilers, Data Structures, Mathematics
-  • Campus      : NH 62, Nagaur Road, Karwar, Jodhpur, Rajasthan
-    `,
     whoami: () => `
-<span class="term-out-success">Amrendra Yadav</span> — 1st Year Undergrad @ IIT Jodhpur
-Base: <strong>Delhi, India</strong> ↔ <strong>IIT Jodhpur</strong>
+<span class="term-out-success">Amrendra Yadav</span> — Systems & Creative Developer
+Base: <strong>Delhi, India</strong>
 Interests: Writing native C++ physics engines, building Python automation scripts, optimizing PostgreSQL indexes, and writing handcrafted web UIs with zero AI bloat.
     `,
     skills: () => `
@@ -950,7 +941,7 @@ Interests: Writing native C++ physics engines, building Python automation script
     `,
     location: () => `
 <span class="term-out-success">Origin Base:</span> Delhi, India (28.6139° N, 77.2090° E)
-<span class="term-out-success">Campus Node:</span> IIT Jodhpur, Rajasthan (26.4711° N, 73.1134° E)
+Timezone: Asia/Kolkata (IST • UTC+5:30)
     `,
     bench: () => {
       const t0 = performance.now();
@@ -1128,7 +1119,7 @@ Interests: Writing native C++ physics engines, building Python automation script
         body: JSON.stringify({
           name: nameVal,
           email: emailVal,
-          subject: subjectVal || "Message via Portfolio (IIT Jodhpur / Delhi)",
+          subject: subjectVal || "Message via Portfolio (Delhi)",
           message: msgVal,
           sender_institution: "Portfolio Web Contact",
           recipient: "amrendrayadav03321@gmail.com"
