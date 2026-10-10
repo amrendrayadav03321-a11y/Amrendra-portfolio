@@ -3,499 +3,553 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Portfolio of Amrendra Yadav, a Creative Developer specializing in C++ engine physics, Python systems automation, SQL queries optimization, and HTML/WebGL visual effects. Connect on Instagram @satyaa.okkk.">
-  <meta name="keywords" content="Amrendra Yadav, Amrendra, C++, Python, SQL, HTML5, WebGL, Creative Developer, Software Engineer, Portfolio, Gorakhpur">
+  <meta name="description" content="Amrendra Yadav - Systems & Creative Engineer specializing in C++ low-latency graphics, Python automation, distributed SQL architectures, and reactive WebGL/Canvas visual experiences based in Delhi, India.">
+  <meta name="keywords" content="Amrendra Yadav, Systems Engineer, Creative Developer, C++, Python, SQL, WebGL, Shader, Delhi, India, Portfolio">
   <meta name="author" content="Amrendra Yadav">
-  <title>Amrendra Yadav | Systems & Creative Developer</title>
+  <title>Amrendra Yadav • Systems & Creative Engineer</title>
   
-  <!-- FontAwesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Custom Styles -->
+  <!-- Fonts: Space Grotesk (tech headings), JetBrains Mono (code/metrics), Plus Jakarta Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Stylesheet -->
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="theme-dark">
 
-  <!-- Dynamic Interactive Particle Background -->
-  <canvas id="canvas-bg"></canvas>
+  <!-- Interactive WebGL-style Canvas Backdrop -->
+  <canvas id="interactive-canvas"></canvas>
+  <div class="noise-overlay"></div>
+  <div class="ambient-glow ambient-glow-1"></div>
+  <div class="ambient-glow ambient-glow-2"></div>
+  <div class="ambient-glow ambient-glow-3"></div>
 
-  <!-- Global Glass Background Glow Orbs -->
-  <div class="glow-orb glow-orb-1"></div>
-  <div class="glow-orb glow-orb-2"></div>
+  <!-- Custom Cursor System -->
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="cursor-follower" id="cursor-follower">
+    <span class="cursor-label" id="cursor-label"></span>
+  </div>
 
-  <!-- Custom Tracking Cursors -->
-  <div class="custom-cursor" id="cursor-dot"></div>
-  <div class="custom-cursor-aura" id="cursor-aura"></div>
+  <!-- Top Glass Island Navigation -->
+  <header class="header-container">
+    <div class="nav-island">
+      <a href="#hero" class="brand-badge" data-cursor="link">
+        <span class="brand-monogram">AY</span>
+        <span class="brand-name">amrendra<span class="brand-dot">.</span>dev</span>
+      </a>
 
-  <!-- Main Navigation Header -->
-  <header class="main-wrapper">
-    <a href="#" class="logo" data-cursor-hover>AMRENDRA.</a>
-    <nav>
-      <ul class="nav-links">
-        <li><a href="#" data-cursor-hover>Home</a></li>
-        <li><a href="#about" data-cursor-hover>About</a></li>
-        <li><a href="#projects" data-cursor-hover>Projects</a></li>
-        <li><a href="#playground" data-cursor-hover>Playground</a></li>
-        <li><a href="#contact" data-cursor-hover>Contact</a></li>
-      </ul>
-    </nav>
-    <a href="https://instagram.com/satyaa.okkk" target="_blank" class="nav-social-btn" data-cursor-hover>
-      <i class="fab fa-instagram"></i>
-      <span>@satyaa.okkk</span>
-    </a>
+      <nav class="nav-menu">
+        <a href="#hero" class="nav-link active" data-cursor="link">Overview</a>
+        <a href="#about" class="nav-link" data-cursor="link">Philosophy</a>
+        <a href="#projects" class="nav-link" data-cursor="link">Engineering</a>
+        <a href="#terminal" class="nav-link" data-cursor="link">Terminal</a>
+        <a href="#playground" class="nav-link" data-cursor="link">Lab</a>
+        <a href="#contact" class="nav-link" data-cursor="link">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="status-indicator" title="Available for high-impact roles">
+          <span class="status-pulse"></span>
+          <span class="status-text">Available</span>
+        </div>
+        <a href="https://instagram.com/satyaa.okkk" target="_blank" rel="noopener noreferrer" class="social-chip" data-cursor="link" title="Instagram: @satyaa.okkk">
+          <i class="fab fa-instagram"></i>
+          <span>@satyaa.okkk</span>
+        </a>
+      </div>
+    </div>
   </header>
 
-  <!-- Content Container -->
-  <main class="main-wrapper">
+  <!-- Main Experience Wrapper -->
+  <main class="page-container">
 
-    <!-- Hero Section -->
+    <!-- HERO SECTION -->
     <section id="hero" class="hero-section">
-      <div class="hero-content">
-        <div class="hero-badge">
-          <span></span>
-          <p>C++ • PYTHON • SQL • HTML SPECIALIST</p>
-        </div>
-        <h1 class="hero-title">
-          <span class="grad-1">Amrendra Yadav</span><br>
-          <span class="grad-2">Systems & Creative Developer</span>
-        </h1>
-        
-        <!-- Scrambler / Typing effect block -->
-        <div class="scrambler-wrapper">
-          <span class="scrambler-text" id="scramble-target">Systems Architect</span>
-          <span class="scrambler-cursor"></span>
-        </div>
+      <div class="hero-grid">
+        <div class="hero-left">
+          
+          <div class="meta-pill" data-cursor="info">
+            <span class="pill-dot"></span>
+            <span class="pill-text">Systems & Creative Engineer • Delhi, India</span>
+          </div>
 
-        <p class="hero-desc">
-          I bridge the gap between low-level performance engineering and high-fidelity frontends, engineering clean code, custom particle physics engines, and smart automated pipelines.
-        </p>
-        <div class="hero-actions">
-          <a href="#projects" class="btn btn-primary" data-cursor-hover>
-            Explore Work <i class="fas fa-arrow-right"></i>
-          </a>
-          <a href="#contact" class="btn btn-secondary" data-cursor-hover>
-            Let's Talk
-          </a>
-        </div>
-      </div>
-    </section>
+          <h1 class="hero-heading">
+            Engineering low-level <span class="gradient-text gradient-ice">performance</span> with high-fidelity <span class="gradient-text gradient-fire">creative vision</span>.
+          </h1>
 
-    <!-- About / Skills Section -->
-    <section id="about">
-      <span class="section-tag">About Me</span>
-      <h2 class="section-title">Coding with <span>Precision</span> & Artistry</h2>
-      <p class="section-desc">Writing high-performance algorithms, orchestrating database structures, and designing modern fluid interfaces.</p>
-      
-      <div class="about-grid">
-        <!-- Bio Card -->
-        <div class="about-card glass-card">
-          <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Development DNA</h3>
-          <p class="about-text">
-            Hi! I am Amrendra Yadav. My engineering framework covers systems programming in C++ for graphics engines, python architectures for analytics automation, SQL database structure optimization, and hardware-accelerated HTML/canvas simulations. I focus on creating bug-free, clean algorithms that scale cleanly across execution threads or database servers.
+          <!-- Live Dynamic Decoder Terminal Subtitle -->
+          <div class="decoder-console">
+            <span class="decoder-prompt">$</span>
+            <span class="decoder-label">specialization:</span>
+            <span class="decoder-text" id="decoder-stream">C++ Core Architect</span>
+            <span class="decoder-caret"></span>
+          </div>
+
+          <p class="hero-summary">
+            I build hardware-accelerated graphics engines in <strong>C++</strong>, distributed streaming pipelines in <strong>Python</strong>, low-latency relational schemas in <strong>SQL</strong>, and dynamic hardware-responsive visual interfaces on the <strong>Web</strong>. Designed for zero bloat, uncompromising speed, and mathematical clarity.
           </p>
-          <div class="about-meta">
-            <div class="meta-item">
-              <label>Developer</label>
-              <span>Amrendra Yadav</span>
+
+          <div class="hero-cta-group">
+            <a href="#projects" class="btn btn-primary" data-cursor="view">
+              <span>Inspect Systems</span>
+              <i class="fas fa-arrow-down-right"></i>
+            </a>
+            <a href="#terminal" class="btn btn-terminal" data-cursor="interact">
+              <i class="fas fa-terminal"></i>
+              <span>Open Terminal</span>
+            </a>
+            <a href="https://github.com/amrendrayadav03321-a11y" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" data-cursor="link">
+              <i class="fab fa-github"></i>
+              <span>GitHub</span>
+            </a>
+          </div>
+
+          <!-- Quick Metrics Bar -->
+          <div class="metrics-ticker">
+            <div class="metric-box">
+              <span class="metric-value" data-target="60">0</span><span class="metric-unit">FPS</span>
+              <span class="metric-caption">Real-time Canvas Render</span>
             </div>
-            <div class="meta-item">
-              <label>Instagram</label>
-              <a href="https://instagram.com/satyaa.okkk" target="_blank" style="color: var(--accent-secondary); text-decoration: none; font-weight: 600;" data-cursor-hover>@satyaa.okkk</a>
+            <div class="metric-separator"></div>
+            <div class="metric-box">
+              <span class="metric-value" data-target="5">0</span><span class="metric-unit">+</span>
+              <span class="metric-caption">Core Architectures</span>
             </div>
-            <div class="meta-item">
-              <label>Core Focus</label>
-              <span>C++ • Python • SQL • Web</span>
-            </div>
-            <div class="meta-item">
-              <label>Location</label>
-              <span>Gorakhpur, Uttar Pradesh</span>
+            <div class="metric-separator"></div>
+            <div class="metric-box">
+              <span class="metric-value">100</span><span class="metric-unit">%</span>
+              <span class="metric-caption">Handcrafted Vanilla Stack</span>
             </div>
           </div>
         </div>
 
-        <!-- Skills Progress Card -->
-        <div class="about-card glass-card">
-          <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 20px;">Expertise Specs</h3>
-          <div class="skills-container">
-            <div class="skill-bar-wrapper">
-              <div class="skill-info">
-                <span>C++ / Graphics & Memory Management</span>
-                <span>88%</span>
+        <!-- Hero Right: Interactive 3D/Physics Wireframe HUD -->
+        <div class="hero-right">
+          <div class="hud-card" id="hud-card" data-cursor="tilt">
+            <div class="hud-header">
+              <div class="hud-controls">
+                <span class="hud-dot hud-dot-red"></span>
+                <span class="hud-dot hud-dot-yellow"></span>
+                <span class="hud-dot hud-dot-green"></span>
               </div>
-              <div class="skill-bar">
-                <div class="skill-progress" data-skill-val="88%"></div>
+              <span class="hud-title">amrendra_vfx_core.cpp</span>
+              <span class="hud-badge">LIVE REAC</span>
+            </div>
+
+            <div class="hud-canvas-wrap">
+              <canvas id="hud-canvas"></canvas>
+              <div class="hud-stats-overlay">
+                <div class="hud-stat-item">
+                  <span class="stat-lbl">LATENCY</span>
+                  <span class="stat-val" id="hud-stat-latency">0.8 ms</span>
+                </div>
+                <div class="hud-stat-item">
+                  <span class="stat-lbl">PARTICLES</span>
+                  <span class="stat-val" id="hud-stat-particles">240 Active</span>
+                </div>
+                <div class="hud-stat-item">
+                  <span class="stat-lbl">LOCATION</span>
+                  <span class="stat-val">Delhi (28.61° N)</span>
+                </div>
               </div>
             </div>
-            <div class="skill-bar-wrapper">
-              <div class="skill-info">
-                <span>Python / Analytics & Pipeline Systems</span>
-                <span>92%</span>
+
+            <div class="hud-footer">
+              <div class="hud-status">
+                <span class="status-indicator-dot"></span>
+                <span>Physics Integration: Verlet RK4</span>
               </div>
-              <div class="skill-bar">
-                <div class="skill-progress" data-skill-val="92%"></div>
-              </div>
-            </div>
-            <div class="skill-bar-wrapper">
-              <div class="skill-info">
-                <span>SQL / Database Optimization & Schema Design</span>
-                <span>85%</span>
-              </div>
-              <div class="skill-bar">
-                <div class="skill-progress" data-skill-val="85%"></div>
-              </div>
-            </div>
-            <div class="skill-bar-wrapper">
-              <div class="skill-info">
-                <span>HTML5 / WebGL Interactive Interfaces</span>
-                <span>95%</span>
-              </div>
-              <div class="skill-bar">
-                <div class="skill-progress" data-skill-val="95%"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Custom Instagram Connect Card -->
-        <div class="insta-banner glass-card">
-          <div class="insta-info">
-            <div class="insta-icon-wrapper">
-              <i class="fab fa-instagram"></i>
-            </div>
-            <div class="insta-text">
-              <h4>Follow Amrendra on Instagram</h4>
-              <p>Check out my creative development updates, math visualizations, and code reels @satyaa.okkk</p>
-            </div>
-          </div>
-          <a href="https://instagram.com/satyaa.okkk" target="_blank" class="btn btn-insta" data-cursor-hover>
-            <i class="fab fa-instagram"></i> Follow Profile
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects">
-      <span class="section-tag">Showcase</span>
-      <h2 class="section-title">Selected <span>Systems</span> & Art</h2>
-      <p class="section-desc">A gallery of production code utilities, 3D math engines, database query analyzers, and high-fidelity frontends.</p>
-
-      <ul class="filter-tabs">
-        <li><button class="filter-tab active" data-filter="all" data-cursor-hover>All Projects</button></li>
-        <li><button class="filter-tab" data-filter="cpp" data-cursor-hover>C++ Code</button></li>
-        <li><button class="filter-tab" data-filter="python" data-cursor-hover>Python Systems</button></li>
-        <li><button class="filter-tab" data-filter="sql" data-cursor-hover>SQL Database</button></li>
-        <li><button class="filter-tab" data-filter="html" data-cursor-hover>HTML/JS Art</button></li>
-      </ul>
-
-      <div class="projects-grid">
-        <!-- Project 1 (C++) -->
-        <div class="project-card glass-card" data-category="cpp" data-cursor-view>
-          <div class="project-img-wrapper" style="background: linear-gradient(135deg, #1e1b4b 0%, #3b0764 100%);">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-              <i class="fas fa-cubes" style="font-size: 64px; color: var(--accent-primary); filter: drop-shadow(0 0 20px var(--accent-primary));"></i>
-            </div>
-            <div class="project-overlay">
-              <div class="project-overlay-btn"><i class="fas fa-expand"></i></div>
-            </div>
-          </div>
-          <div class="project-info">
-            <div class="project-tags">
-              <span class="project-tag">C++</span>
-              <span class="project-tag">OpenGL 4.6</span>
-              <span class="project-tag">Graphics</span>
-            </div>
-            <h3 class="project-title">Aether 3D Engine</h3>
-            <p class="project-summary">
-              A high-performance C++ graphics renderer with custom shader pipelines, lighting engines, and manual RAM optimizations.
-            </p>
-            <a href="#" class="project-link" data-project-id="1" data-cursor-hover>Explore Engine <i class="fas fa-arrow-right"></i></a>
-          </div>
-        </div>
-
-        <!-- Project 2 (Python) -->
-        <div class="project-card glass-card" data-category="python" data-cursor-view>
-          <div class="project-img-wrapper" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 15px;">
-              <i class="fab fa-python" style="font-size: 64px; color: #3b82f6; filter: drop-shadow(0 0 20px #3b82f6);"></i>
-            </div>
-            <div class="project-overlay">
-              <div class="project-overlay-btn"><i class="fas fa-expand"></i></div>
-            </div>
-          </div>
-          <div class="project-info">
-            <div class="project-tags">
-              <span class="project-tag">Python</span>
-              <span class="project-tag">Pandas</span>
-              <span class="project-tag">AI Pipeline</span>
-            </div>
-            <h3 class="project-title">PyStream Analytics</h3>
-            <p class="project-summary">
-              An AI-driven real-time data streaming pipeline built in Python to run calculations, clean sets, and display analytics metrics.
-            </p>
-            <a href="#" class="project-link" data-project-id="2" data-cursor-hover>Explore Pipeline <i class="fas fa-arrow-right"></i></a>
-          </div>
-        </div>
-
-        <!-- Project 3 (SQL) -->
-        <div class="project-card glass-card" data-category="sql" data-cursor-view>
-          <div class="project-img-wrapper" style="background: linear-gradient(135deg, #022c22 0%, #064e3b 100%);">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-              <i class="fas fa-database" style="font-size: 64px; color: var(--accent-tertiary); filter: drop-shadow(0 0 20px var(--accent-tertiary));"></i>
-            </div>
-            <div class="project-overlay">
-              <div class="project-overlay-btn"><i class="fas fa-expand"></i></div>
-            </div>
-          </div>
-          <div class="project-info">
-            <div class="project-tags">
-              <span class="project-tag">SQL</span>
-              <span class="project-tag">PostgreSQL</span>
-              <span class="project-tag">DB Tuning</span>
-            </div>
-            <h3 class="project-title">Nexus DB Optimizer</h3>
-            <p class="project-summary">
-              A collection of transactional database indexing algorithms, query tuning models, and relational schema designs built to speed latency.
-            </p>
-            <a href="#" class="project-link" data-project-id="3" data-cursor-hover>Explore SQL Code <i class="fas fa-arrow-right"></i></a>
-          </div>
-        </div>
-
-        <!-- Project 4 (HTML/WebGL) -->
-        <div class="project-card glass-card" data-category="html" data-cursor-view>
-          <div class="project-img-wrapper" style="background: linear-gradient(135deg, #134e5e 0%, #2f80ed 100%);">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-              <i class="fas fa-code" style="font-size: 64px; color: var(--accent-secondary); filter: drop-shadow(0 0 20px var(--accent-secondary));"></i>
-            </div>
-            <div class="project-overlay">
-              <div class="project-overlay-btn"><i class="fas fa-expand"></i></div>
-            </div>
-          </div>
-          <div class="project-info">
-            <div class="project-tags">
-              <span class="project-tag">HTML5</span>
-              <span class="project-tag">WebGL</span>
-              <span class="project-tag">VFX Canvas</span>
-            </div>
-            <h3 class="project-title">Nebula VFX Framework</h3>
-            <p class="project-summary">
-              A lightweight interactive WebGL canvas framework rendering particle explosions, fluids, and light effects dynamically.
-            </p>
-            <a href="#" class="project-link" data-project-id="4" data-cursor-hover>Explore Framework <i class="fas fa-arrow-right"></i></a>
-          </div>
-        </div>
-
-        <!-- Project 5 (HTML/JavaScript Physics) -->
-        <div class="project-card glass-card" data-category="html" data-cursor-view>
-          <div class="project-img-wrapper" style="background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
-              <i class="fas fa-atom" style="font-size: 64px; color: #f43f5e; filter: drop-shadow(0 0 20px #f43f5e); animation: spinAtom 6s linear infinite;"></i>
-            </div>
-            <div class="project-overlay">
-              <div class="project-overlay-btn"><i class="fas fa-expand"></i></div>
-            </div>
-          </div>
-          <div class="project-info">
-            <div class="project-tags">
-              <span class="project-tag">JavaScript</span>
-              <span class="project-tag">HTML5 Canvas</span>
-              <span class="project-tag">Physics</span>
-            </div>
-            <h3 class="project-title">Quantum Physics Sandbox</h3>
-            <p class="project-summary">
-              A multi-body gravitational physics sandbox with real-time vector charts and interactive drag-and-drop elements.
-            </p>
-            <a href="#" class="project-link" data-project-id="5" data-cursor-hover>Explore Sandbox <i class="fas fa-arrow-right"></i></a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Interactive Creative Playground Section -->
-    <section id="playground">
-      <span class="section-tag">Interactive Sandbox</span>
-      <h2 class="section-title">Glow <span>Wave</span> Generator</h2>
-      <p class="section-desc">Adjust the variables below to manipulate the rendering frequencies and colors of the animated sine wave live.</p>
-
-      <div class="playground-grid">
-        <!-- Interactive Canvas Card -->
-        <div class="playground-canvas-card glass-card">
-          <canvas id="sine-wave-canvas"></canvas>
-        </div>
-
-        <!-- Sliders control panel -->
-        <div class="playground-controls glass-card">
-          <!-- Slider 1 -->
-          <div class="slider-group">
-            <div class="slider-label">
-              <span>Wave Frequency</span>
-              <span id="label-freq">0.015</span>
-            </div>
-            <input type="range" min="0.002" max="0.05" step="0.001" value="0.015" class="slider-input" id="control-freq" data-cursor-hover>
-          </div>
-
-          <!-- Slider 2 -->
-          <div class="slider-group">
-            <div class="slider-label">
-              <span>Amplitude (Height)</span>
-              <span id="label-amp">60px</span>
-            </div>
-            <input type="range" min="10" max="150" value="60" class="slider-input" id="control-amp" data-cursor-hover>
-          </div>
-
-          <!-- Slider 3 -->
-          <div class="slider-group">
-            <div class="slider-label">
-              <span>Velocity (Speed)</span>
-              <span id="label-speed">0.05</span>
-            </div>
-            <input type="range" min="0.01" max="0.15" step="0.01" value="0.05" class="slider-input" id="control-speed" data-cursor-hover>
-          </div>
-
-          <!-- Color options selector -->
-          <div class="slider-group">
-            <div class="slider-label">
-              <span>Wave Glow Theme</span>
-            </div>
-            <div class="color-picker-group">
-              <button class="color-option color-cyan active" data-color="cyan" data-cursor-hover title="Cyan Accent"></button>
-              <button class="color-option color-purple" data-color="purple" data-cursor-hover title="Purple Accent"></button>
-              <button class="color-option color-gold" data-color="gold" data-cursor-hover title="Gold Accent"></button>
-              <button class="color-option color-rose" data-color="rose" data-cursor-hover title="Rose Accent"></button>
+              <button class="hud-mode-btn" id="hud-cycle-btn" data-cursor="button">Cycle Mode</button>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Contact Form Section -->
-    <section id="contact">
-      <span class="section-tag">Let's Connect</span>
-      <h2 class="section-title">Start a <span>Project</span></h2>
-      <p class="section-desc">Have a creative idea, business request, or just want to say hi? Drop a message down below!</p>
+    <!-- PHILOSOPHY / ABOUT SECTION -->
+    <section id="about" class="section-container">
+      <div class="section-header">
+        <span class="section-tag">// IDENTITY & ARCHITECTURE</span>
+        <h2 class="section-title">Beyond generic templates. <span class="gradient-text gradient-ice">Pure engineering craft.</span></h2>
+        <p class="section-desc">
+          Most portfolio sites rely on heavy pre-built libraries that look identical. My philosophy is to build from foundational principles: memory ownership, mathematical coordinate systems, deterministic state, and responsive visual design.
+        </p>
+      </div>
+
+      <div class="bento-grid">
+        <!-- Bento 1: Core Bio -->
+        <div class="bento-card bento-wide" data-cursor="card">
+          <div class="bento-glow"></div>
+          <div class="card-inner">
+            <div class="bento-icon"><i class="fas fa-microchip"></i></div>
+            <h3 class="bento-title">Systems & Full-Spectrum Developer</h3>
+            <p class="bento-text">
+              Based in <strong>Delhi, India</strong>, I bridge systems-level computation (memory layout, SIMD, cache locality) with fluid, hardware-accelerated frontends. Whether optimizing database query execution plans, threading mathematical simulations, or engineering interactive web visualizers, I prioritize clarity and maintainable architecture.
+            </p>
+            <div class="spec-pills">
+              <span class="spec-pill"><i class="fas fa-location-dot"></i> Delhi, India</span>
+              <span class="spec-pill"><i class="fas fa-envelope"></i> amrendrayadav03321@gmail.com</span>
+              <span class="spec-pill"><i class="fas fa-phone"></i> +91 6307124831</span>
+              <span class="spec-pill"><i class="fab fa-instagram"></i> @satyaa.okkk</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bento 2: Core Stack Radar -->
+        <div class="bento-card" data-cursor="card">
+          <div class="bento-glow"></div>
+          <div class="card-inner">
+            <div class="bento-icon"><i class="fas fa-cubes-stacked"></i></div>
+            <h3 class="bento-title">Language Matrix</h3>
+            <ul class="tech-matrix">
+              <li class="matrix-item">
+                <div class="matrix-header">
+                  <span class="matrix-name"><i class="fas fa-code"></i> C++ (17/20)</span>
+                  <span class="matrix-val">OpenGL • Vulkan • Memory Ops</span>
+                </div>
+                <div class="matrix-bar"><div class="matrix-fill" style="width: 90%;"></div></div>
+              </li>
+              <li class="matrix-item">
+                <div class="matrix-header">
+                  <span class="matrix-name"><i class="fab fa-python"></i> Python 3.x</span>
+                  <span class="matrix-val">Data Pipelines • ML • Automation</span>
+                </div>
+                <div class="matrix-bar"><div class="matrix-fill" style="width: 94%;"></div></div>
+              </li>
+              <li class="matrix-item">
+                <div class="matrix-header">
+                  <span class="matrix-name"><i class="fas fa-database"></i> SQL / Postgres</span>
+                  <span class="matrix-val">Index Tuning • CTEs • Partitions</span>
+                </div>
+                <div class="matrix-bar"><div class="matrix-fill" style="width: 88%;"></div></div>
+              </li>
+              <li class="matrix-item">
+                <div class="matrix-header">
+                  <span class="matrix-name"><i class="fab fa-html5"></i> Web & Canvas</span>
+                  <span class="matrix-val">GLSL • CSS Starting-Style • Vanilla</span>
+                </div>
+                <div class="matrix-bar"><div class="matrix-fill" style="width: 96%;"></div></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Bento 3: Architectural Values -->
+        <div class="bento-card" data-cursor="card">
+          <div class="bento-glow"></div>
+          <div class="card-inner">
+            <div class="bento-icon"><i class="fas fa-shield-halved"></i></div>
+            <h3 class="bento-title">Core Principles</h3>
+            <div class="principles-list">
+              <div class="principle-item">
+                <span class="principle-num">01</span>
+                <div>
+                  <strong>Zero-Framework Bloat</strong>
+                  <p>Faster render cycles, instant Time to Interactive, and predictable behavior.</p>
+                </div>
+              </div>
+              <div class="principle-item">
+                <span class="principle-num">02</span>
+                <div>
+                  <strong>Deterministic Logic</strong>
+                  <p>Memory-safe state machines and verified edge-case handling.</p>
+                </div>
+              </div>
+              <div class="principle-item">
+                <span class="principle-num">03</span>
+                <div>
+                  <strong>Visual Purpose</strong>
+                  <p>Animations serve feedback and user comprehension, never gratuitous distraction.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS & SYSTEMS SHOWCASE -->
+    <section id="projects" class="section-container">
+      <div class="section-header">
+        <span class="section-tag">// PRODUCTION REPOSITORIES & SYSTEMS</span>
+        <h2 class="section-title">Selected <span class="gradient-text gradient-fire">Engineering Works</span></h2>
+        <p class="section-desc">
+          Full codebases spanning low-level native rendering, real-time data automation, high-performance database indexing, and browser-based shader physics.
+        </p>
+      </div>
+
+      <!-- Filter Controls -->
+      <div class="filter-bar">
+        <button class="filter-chip active" data-filter="all" data-cursor="button">All Disciplines</button>
+        <button class="filter-chip" data-filter="cpp" data-cursor="button">C++ Native</button>
+        <button class="filter-chip" data-filter="python" data-cursor="button">Python & ML</button>
+        <button class="filter-chip" data-filter="sql" data-cursor="button">SQL Databases</button>
+        <button class="filter-chip" data-filter="web" data-cursor="button">WebGL & Web</button>
+      </div>
+
+      <!-- Dynamic Projects Showcase Grid -->
+      <div class="projects-grid" id="projects-grid">
+        <!-- Rendered dynamically by JavaScript with interactive modal inspection -->
+      </div>
+    </section>
+
+    <!-- INTERACTIVE TERMINAL SECTION -->
+    <section id="terminal" class="section-container">
+      <div class="section-header">
+        <span class="section-tag">// REPL CONSOLE</span>
+        <h2 class="section-title">Interactive <span class="gradient-text gradient-ice">Developer CLI</span></h2>
+        <p class="section-desc">
+          Type commands directly to inspect system info, inspect projects, query GitHub metrics, or run simulated diagnostics in real time.
+        </p>
+      </div>
+
+      <div class="terminal-shell" data-cursor="interact">
+        <div class="terminal-bar">
+          <div class="terminal-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="terminal-title">amrendra@delhi-node: ~/workspace</span>
+          <div class="terminal-actions">
+            <span class="terminal-badge">zsh / bash</span>
+          </div>
+        </div>
+        <div class="terminal-body" id="terminal-output">
+          <p class="term-line term-intro">Welcome to Amrendra Yadav's Interactive Terminal v3.2 [OS: Delhi-Core-Mac]</p>
+          <p class="term-line term-intro">Type <span class="term-highlight">help</span> to list available commands, or try <span class="term-highlight">skills</span>, <span class="term-highlight">projects</span>, <span class="term-highlight">contact</span>, <span class="term-highlight">clear</span>.</p>
+        </div>
+        <div class="terminal-input-row">
+          <span class="term-prompt">guest@amrendra:~$</span>
+          <input type="text" id="terminal-input" class="terminal-input" autocomplete="off" spellcheck="false" placeholder="type 'help' and press Enter...">
+        </div>
+      </div>
+    </section>
+
+    <!-- MATHEMATICAL SINE & PARTICLES LAB -->
+    <section id="playground" class="section-container">
+      <div class="section-header">
+        <span class="section-tag">// INTERACTIVE MATH LAB</span>
+        <h2 class="section-title">Harmonic <span class="gradient-text gradient-fire">Oscillator Lab</span></h2>
+        <p class="section-desc">
+          Live mathematical multi-harmonic sine synthesis running on raw HTML5 Canvas. Adjust phase velocity, amplitude attenuation, and harmonic frequency live.
+        </p>
+      </div>
+
+      <div class="lab-workspace">
+        <div class="lab-canvas-container">
+          <canvas id="lab-canvas"></canvas>
+          <div class="lab-hud-overlay">
+            <span id="lab-equation-display">y(t) = A₁·sin(ω₁t + φ) + A₂·sin(ω₂t)</span>
+          </div>
+        </div>
+
+        <div class="lab-controls-panel">
+          <div class="control-card">
+            <div class="control-header">
+              <span class="control-name">Fundamental Frequency (ω)</span>
+              <span class="control-readout" id="lbl-freq">0.018</span>
+            </div>
+            <input type="range" min="0.005" max="0.06" step="0.001" value="0.018" class="range-slider" id="slider-freq">
+          </div>
+
+          <div class="control-card">
+            <div class="control-header">
+              <span class="control-name">Amplitude (Peak px)</span>
+              <span class="control-readout" id="lbl-amp">65 px</span>
+            </div>
+            <input type="range" min="15" max="140" step="1" value="65" class="range-slider" id="slider-amp">
+          </div>
+
+          <div class="control-card">
+            <div class="control-header">
+              <span class="control-name">Phase Velocity</span>
+              <span class="control-readout" id="lbl-speed">0.04</span>
+            </div>
+            <input type="range" min="0.01" max="0.14" step="0.005" value="0.04" class="range-slider" id="slider-speed">
+          </div>
+
+          <div class="control-card">
+            <span class="control-name">Harmonic Spectral Palette</span>
+            <div class="palette-swatches">
+              <button class="palette-swatch active" data-palette="cyber" style="--swatch-color: #06b6d4;" title="Cyan Core"></button>
+              <button class="palette-swatch" data-palette="violet" style="--swatch-color: #8b5cf6;" title="Electric Violet"></button>
+              <button class="palette-swatch" data-palette="amber" style="--swatch-color: #f59e0b;" title="Solar Amber"></button>
+              <button class="palette-swatch" data-palette="rose" style="--swatch-color: #ec4899;" title="Neon Crimson"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT & DIRECT DISPATCH SECTION -->
+    <section id="contact" class="section-container">
+      <div class="section-header">
+        <span class="section-tag">// COMMUNICATE & COLLABORATE</span>
+        <h2 class="section-title">Initiate a <span class="gradient-text gradient-ice">Connection</span></h2>
+        <p class="section-desc">
+          Available for senior technical discussions, architecture consulting, or high-impact software projects. All submissions are dispatched asynchronously straight to my personal inbox.
+        </p>
+      </div>
 
       <div class="contact-grid">
-        <!-- Contact card info details -->
-        <div class="contact-card-info glass-card">
-          <div class="contact-header">
-            <h3>Get in touch</h3>
-            <p>I typically reply to messages and inquiries within 24 hours.</p>
-          </div>
-          <div class="contact-methods">
-            <div class="method-item">
-              <div class="method-icon"><i class="fas fa-envelope"></i></div>
-              <div class="method-details">
-                <p>Email</p>
-                <a href="mailto:amrendrayadav03321@gmail.com" data-cursor-hover>amrendrayadav03321@gmail.com</a>
+        <!-- Direct channels info card -->
+        <div class="contact-info-card" data-cursor="card">
+          <h3 class="contact-card-title">Direct Channels</h3>
+          <p class="contact-card-desc">
+            Based in <strong>Delhi, India</strong> (IST / UTC+5:30). Expect a response within 24 business hours.
+          </p>
+
+          <div class="channel-rows">
+            <a href="mailto:amrendrayadav03321@gmail.com" class="channel-row" data-cursor="link">
+              <div class="channel-icon"><i class="fas fa-envelope"></i></div>
+              <div class="channel-meta">
+                <span class="channel-label">EMAIL ADDRESS</span>
+                <span class="channel-value">amrendrayadav03321@gmail.com</span>
               </div>
-            </div>
-            <div class="method-item">
-              <div class="method-icon"><i class="fas fa-phone"></i></div>
-              <div class="method-details">
-                <p>Call / WhatsApp</p>
-                <a href="tel:6307124831" data-cursor-hover>+91 6307124831</a>
+            </a>
+
+            <a href="tel:6307124831" class="channel-row" data-cursor="link">
+              <div class="channel-icon"><i class="fas fa-phone"></i></div>
+              <div class="channel-meta">
+                <span class="channel-label">PHONE / WHATSAPP</span>
+                <span class="channel-value">+91 6307124831</span>
               </div>
-            </div>
-            <div class="method-item">
-              <div class="method-icon"><i class="fab fa-instagram"></i></div>
-              <div class="method-details">
-                <p>Instagram DM</p>
-                <a href="https://instagram.com/satyaa.okkk" target="_blank" data-cursor-hover>@satyaa.okkk</a>
+            </a>
+
+            <a href="https://instagram.com/satyaa.okkk" target="_blank" rel="noopener noreferrer" class="channel-row" data-cursor="link">
+              <div class="channel-icon"><i class="fab fa-instagram"></i></div>
+              <div class="channel-meta">
+                <span class="channel-label">INSTAGRAM</span>
+                <span class="channel-value">@satyaa.okkk</span>
               </div>
-            </div>
-            <div class="method-item">
-              <div class="method-icon"><i class="fas fa-location-dot"></i></div>
-              <div class="method-details">
-                <p>Location</p>
-                <a href="#" data-cursor-hover>Gorakhpur, UP, India</a>
+            </a>
+
+            <a href="https://github.com/amrendrayadav03321-a11y" target="_blank" rel="noopener noreferrer" class="channel-row" data-cursor="link">
+              <div class="channel-icon"><i class="fab fa-github"></i></div>
+              <div class="channel-meta">
+                <span class="channel-label">GITHUB REPOSITORIES</span>
+                <span class="channel-value">@amrendrayadav03321-a11y</span>
+              </div>
+            </a>
+
+            <div class="channel-row">
+              <div class="channel-icon"><i class="fas fa-location-dot"></i></div>
+              <div class="channel-meta">
+                <span class="channel-label">BASE LOCATION</span>
+                <span class="channel-value">Delhi, India</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Contact Form (Submits to FormSubmit.co via asynchronous JS fetch to deliver to email) -->
-        <form class="contact-form glass-card" id="portfolio-contact-form" action="https://formsubmit.co/amrendrayadav03321@gmail.com" method="POST">
-          <!-- FormSubmit Options -->
-          <input type="hidden" name="_subject" value="New message from Amrendra Yadav Portfolio!">
-          <input type="hidden" name="_captcha" value="false">
-          
-          <div class="form-group">
-            <label for="name">Your Name</label>
-            <input type="text" id="name" name="name" class="form-input" placeholder="Amrendra Yadav" required minlength="2" data-cursor-hover>
-          </div>
-          
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" class="form-input" placeholder="amrendrayadav03321@gmail.com" required data-cursor-hover>
-          </div>
+        <!-- Asynchronous FormSubmit form -->
+        <div class="contact-form-wrap" data-cursor="card">
+          <form class="contact-form" id="contact-form" action="https://formsubmit.co/ajax/amrendrayadav03321@gmail.com" method="POST">
+            <input type="hidden" name="_subject" value="New Inquiry via Amrendra Yadav Portfolio (Delhi)">
+            <input type="hidden" name="_captcha" value="false">
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name" class="form-label">Your Name</label>
+                <input type="text" id="name" name="name" class="form-input" placeholder="e.g. Satya Sharma" required minlength="2" autocomplete="name">
+              </div>
+              <div class="form-group">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="e.g. name@company.com" required autocomplete="email">
+              </div>
+            </div>
 
-          <div class="form-group">
-            <label for="message">Message</label>
-            <textarea id="message" name="message" class="form-input" placeholder="Describe your vision or database inquiry..." required minlength="10" data-cursor-hover></textarea>
-          </div>
+            <div class="form-group">
+              <label for="subject" class="form-label">Subject / Scope</label>
+              <input type="text" id="subject" name="subject" class="form-input" placeholder="e.g. C++ Engine Consultation / Architecture Review">
+            </div>
 
-          <button type="submit" class="form-submit-btn" data-cursor-hover>
-            Send Message <i class="fas fa-paper-plane" style="margin-left: 8px;"></i>
-          </button>
-        </form>
+            <div class="form-group">
+              <label for="message" class="form-label">Message Payload</label>
+              <textarea id="message" name="message" class="form-input form-textarea" placeholder="Describe the problem, timeline, or engineering specs..." required minlength="15"></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submit-btn" data-cursor="button">
+              <span class="btn-text">Transmit Message</span>
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </form>
+        </div>
       </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-      <div class="footer-socials">
-        <a href="https://instagram.com/satyaa.okkk" target="_blank" class="footer-social-link" data-cursor-hover title="Instagram">
-          <i class="fab fa-instagram"></i>
-        </a>
-        <a href="#" class="footer-social-link" data-cursor-hover title="Github">
-          <i class="fab fa-github"></i>
-        </a>
-        <a href="#" class="footer-social-link" data-cursor-hover title="Twitter">
-          <i class="fab fa-x-twitter"></i>
-        </a>
-        <a href="#" class="footer-social-link" data-cursor-hover title="LinkedIn">
-          <i class="fab fa-linkedin-in"></i>
-        </a>
+    <!-- FOOTER -->
+    <footer class="footer-wrap">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="brand-monogram">AY</span>
+          <div>
+            <h4 class="footer-name">Amrendra Yadav</h4>
+            <p class="footer-sub">Systems & Creative Engineer • Delhi, India</p>
+          </div>
+        </div>
+
+        <div class="footer-socials">
+          <a href="https://github.com/amrendrayadav03321-a11y" target="_blank" rel="noopener noreferrer" class="footer-link" data-cursor="link" title="GitHub"><i class="fab fa-github"></i></a>
+          <a href="https://instagram.com/satyaa.okkk" target="_blank" rel="noopener noreferrer" class="footer-link" data-cursor="link" title="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="mailto:amrendrayadav03321@gmail.com" class="footer-link" data-cursor="link" title="Email"><i class="fas fa-envelope"></i></a>
+          <a href="tel:6307124831" class="footer-link" data-cursor="link" title="Call"><i class="fas fa-phone"></i></a>
+        </div>
       </div>
-      <div class="footer-copy">
-        Designed & Coded with <i class="fas fa-heart" style="color: #ec4899; margin: 0 4px;"></i> by <span>Amrendra Yadav</span>
-        <br>
-        Connect on Instagram <a href="https://instagram.com/satyaa.okkk" target="_blank" style="color: var(--accent-primary); text-decoration: none;" data-cursor-hover>@satyaa.okkk</a>
+      <div class="footer-bottom">
+        <span>© 2026 Amrendra Yadav. Handcrafted with zero bloated frameworks. Delhi, India.</span>
+        <span>Instagram: <a href="https://instagram.com/satyaa.okkk" target="_blank" rel="noopener noreferrer" class="footer-author-link">@satyaa.okkk</a></span>
       </div>
     </footer>
 
   </main>
 
-  <!-- Project Detail Modal (Top-layer native Dialog with Source Code Viewer) -->
-  <dialog id="project-modal">
-    <div class="modal-content">
-      <button class="modal-close-btn" id="modal-close" data-cursor-hover>
-        <i class="fas fa-times"></i>
-      </button>
-      <div class="modal-img-wrapper" id="modal-project-bg" style="background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);">
-        <!-- Visual rendering container -->
-        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;" id="modal-media-vector"></div>
+  <!-- NATIVE TOP-LAYER DIALOG MODAL (Source Inspector) -->
+  <dialog id="project-modal" class="project-dialog">
+    <div class="dialog-shell">
+      <div class="dialog-header">
+        <div class="dialog-tag-row" id="modal-tags"></div>
+        <button class="dialog-close-btn" id="modal-close-btn" data-cursor="button" aria-label="Close modal">
+          <i class="fas fa-xmark"></i>
+        </button>
       </div>
-      <div class="modal-info-body">
-        <div class="modal-tags" id="modal-project-tags"></div>
-        <h3 class="modal-title" id="modal-project-title">Project Title</h3>
-        <p class="modal-description" id="modal-project-description">
-          Project description details will load dynamically here...
-        </p>
-        
-        <!-- Collapsible Source Code Viewer -->
-        <details class="modal-code-details" id="modal-code-details-wrapper">
-          <summary class="modal-code-summary" data-cursor-hover>
-            <i class="fas fa-code"></i> View Source Code
-          </summary>
-          <div class="modal-code-wrapper">
-            <code class="modal-code-block" id="modal-project-code"></code>
+
+      <div class="dialog-hero">
+        <h2 class="dialog-title" id="modal-title">Project Title</h2>
+        <p class="dialog-desc" id="modal-desc">Description will be injected here.</p>
+      </div>
+
+      <!-- Live Code & Architectural Inspector -->
+      <div class="dialog-code-panel">
+        <div class="code-panel-header">
+          <div class="code-tab-active">
+            <i class="fas fa-code"></i>
+            <span id="modal-code-filename">core_source.cpp</span>
           </div>
-        </details>
+          <button class="copy-btn" id="copy-code-btn" data-cursor="button" title="Copy code snippet">
+            <i class="fas fa-copy"></i>
+            <span>Copy</span>
+          </button>
+        </div>
+        <pre class="code-pre"><code class="code-block" id="modal-code"></code></pre>
+      </div>
+
+      <div class="dialog-footer">
+        <div class="dialog-tech-chips" id="modal-tech-chips"></div>
+        <div class="dialog-links">
+          <a href="https://github.com/amrendrayadav03321-a11y" target="_blank" rel="noopener noreferrer" class="dialog-action-btn" data-cursor="link">
+            <i class="fab fa-github"></i>
+            <span>Repository</span>
+          </a>
+        </div>
       </div>
     </div>
   </dialog>
 
-  <!-- Javascript Logic -->
+  <!-- Interactive JavaScript Architecture -->
   <script src="app.js"></script>
 </body>
 </html>

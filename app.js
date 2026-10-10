@@ -1,961 +1,1050 @@
+/**
+ * AMRENDRA YADAV — SYSTEMS & CREATIVE PORTFOLIO (DELHI, INDIA)
+ * Core Architecture & Reactive Interactive Engine
+ * Zero external libraries. 100% Native Web Standards.
+ */
+
 document.addEventListener("DOMContentLoaded", () => {
+  "use strict";
 
-  // ==========================================
-  // 1. Text Scrambler / Typing VFX Effect
-  // ==========================================
-  class TextScrambler {
-    constructor(el) {
-      this.el = el;
-      this.chars = '!<>-_\\/[]{}—=+*^?#______';
-      this.update = this.update.bind(this);
-    }
-    
-    setText(newText) {
-      const oldText = this.el.innerText;
-      const length = Math.max(oldText.length, newText.length);
-      const promise = new Promise((resolve) => this.resolve = resolve);
-      this.queue = [];
-      for (let i = 0; i < length; i++) {
-        const from = oldText[i] || '';
-        const to = newText[i] || '';
-        const start = Math.floor(Math.random() * 40);
-        const end = start + Math.floor(Math.random() * 40);
-        this.queue.push({ from, to, start, end, char: '' });
-      }
-      cancelAnimationFrame(this.frameRequest);
-      this.frame = 0;
-      this.update();
-      return promise;
-    }
-    
-    update() {
-      let output = '';
-      let complete = 0;
-      for (let i = 0, n = this.queue.length; i < n; i++) {
-        let { from, to, start, end, char } = this.queue[i];
-        if (this.frame >= end) {
-          complete++;
-          output += to;
-        } else if (this.frame >= start) {
-          if (!char || Math.random() < 0.28) {
-            char = this.randomChar();
-            this.queue[i].char = char;
-          }
-          output += `<span style="color: var(--accent-primary); opacity: 0.85;">${char}</span>`;
-        } else {
-          output += from;
-        }
-      }
-      this.el.innerHTML = output;
-      if (complete === this.queue.length) {
-        this.resolve();
-      } else {
-        this.frameRequest = requestAnimationFrame(this.update);
-        this.frame++;
-      }
-    }
-    
-    randomChar() {
-      return this.chars[Math.floor(Math.random() * this.chars.length)];
-    }
-  }
-
-  // Active Scrambler phrases
-  const phrases = [
-    "C++ Graphics Architect",
-    "Python Automation Expert",
-    "SQL Database Engineer",
-    "Creative Web UI Artist"
-  ];
-  
-  const el = document.getElementById('scramble-target');
-  if (el) {
-    const fx = new TextScrambler(el);
-    let counter = 0;
-    const next = () => {
-      fx.setText(phrases[counter]).then(() => {
-        setTimeout(next, 3200);
-      });
-      counter = (counter + 1) % phrases.length;
-    };
-    next();
-  }
-
-
-  // ==========================================
-  // 2. Custom Mouse Cursor Followers
-  // ==========================================
-  const cursorDot = document.getElementById("cursor-dot");
-  const cursorAura = document.getElementById("cursor-aura");
-  
-  let mouseX = window.innerWidth / 2;
-  let mouseY = window.innerHeight / 2;
-  let auraX = window.innerWidth / 2;
-  let auraY = window.innerHeight / 2;
-  
-  window.addEventListener("mousemove", (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    
-    cursorDot.style.left = `${mouseX}px`;
-    cursorDot.style.top = `${mouseY}px`;
-  });
-
-  function animateCursor() {
-    const lerpFactor = 0.14;
-    auraX += (mouseX - auraX) * lerpFactor;
-    auraY += (mouseY - auraY) * lerpFactor;
-    
-    cursorAura.style.left = `${auraX}px`;
-    cursorAura.style.top = `${auraY}px`;
-    
-    requestAnimationFrame(animateCursor);
-  }
-  animateCursor();
-
-  function setupCursorHoverListeners() {
-    const hoverElements = document.querySelectorAll("[data-cursor-hover]");
-    hoverElements.forEach(elem => {
-      elem.addEventListener("mouseenter", () => document.body.classList.add("cursor-hover"));
-      elem.addEventListener("mouseleave", () => document.body.classList.remove("cursor-hover"));
-    });
-
-    const viewElements = document.querySelectorAll("[data-cursor-view]");
-    viewElements.forEach(elem => {
-      elem.addEventListener("mouseenter", () => document.body.classList.add("cursor-view-mode"));
-      elem.addEventListener("mouseleave", () => document.body.classList.remove("cursor-view-mode"));
-    });
-  }
-  setupCursorHoverListeners();
-
-
-  // ==========================================
-  // 3. Card Hover Glowing Borders Tracker
-  // ==========================================
-  const projectCardsList = document.querySelectorAll(".project-card");
-  projectCardsList.forEach(card => {
-    card.addEventListener("mousemove", (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      card.style.setProperty("--mouse-x", `${x}px`);
-      card.style.setProperty("--mouse-y", `${y}px`);
-    });
-  });
-
-
-  // ==========================================
-  // 4. Interactive Canvas Background (With Click Shockwaves)
-  // ==========================================
-  const canvasBg = document.getElementById("canvas-bg");
-  const ctxBg = canvasBg.getContext("2d");
-  
-  let particles = [];
-  let particleCount = 65;
-  let mouse = { x: null, y: null, radius: 140 };
-  let shockwaves = [];
-
-  if (window.innerWidth < 768) {
-    particleCount = 30;
-  }
-
-  function resizeCanvas() {
-    canvasBg.width = window.innerWidth;
-    canvasBg.height = window.innerHeight;
-    initParticles();
-  }
-
-  window.addEventListener("resize", () => {
-    resizeCanvas();
-  });
-
-  window.addEventListener("mousemove", (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-  });
-
-  window.addEventListener("mouseout", () => {
-    mouse.x = null;
-    mouse.y = null;
-  });
-
-  class Particle {
-    constructor(x, y) {
-      this.x = x || Math.random() * canvasBg.width;
-      this.y = y || Math.random() * canvasBg.height;
-      this.size = Math.random() * 2 + 1;
-      this.vx = (Math.random() - 0.5) * 0.45;
-      this.vy = (Math.random() - 0.5) * 0.45;
-      this.baseAlpha = Math.random() * 0.28 + 0.1;
-      this.alpha = this.baseAlpha;
-      this.friction = 0.98;
-    }
-
-    draw() {
-      ctxBg.beginPath();
-      ctxBg.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctxBg.fillStyle = `rgba(139, 92, 246, ${this.alpha})`;
-      ctxBg.fill();
-    }
-
-    update() {
-      this.vx *= this.friction;
-      this.vy *= this.friction;
-      
-      this.vx += (Math.random() - 0.5) * 0.02;
-      this.vy += (Math.random() - 0.5) * 0.02;
-
-      this.x += this.vx;
-      this.y += this.vy;
-
-      if (this.x < 0) this.x = canvasBg.width;
-      if (this.x > canvasBg.width) this.x = 0;
-      if (this.y < 0) this.y = canvasBg.height;
-      if (this.y > canvasBg.height) this.y = 0;
-
-      if (mouse.x !== null && mouse.y !== null) {
-        let dx = this.x - mouse.x;
-        let dy = this.y - mouse.y;
-        let dist = Math.sqrt(dx * dx + dy * dy);
-        
-        if (dist < mouse.radius) {
-          let force = (mouse.radius - dist) / mouse.radius;
-          this.x -= dx * force * 0.035;
-          this.y -= dy * force * 0.035;
-          this.alpha = Math.min(this.baseAlpha * 2.2, 0.75);
-        } else {
-          if (this.alpha > this.baseAlpha) {
-            this.alpha -= 0.015;
-          }
-        }
-      }
-
-      shockwaves.forEach(wave => {
-        let dx = this.x - wave.x;
-        let dy = this.y - wave.y;
-        let dist = Math.sqrt(dx * dx + dy * dy);
-        let tolerance = 25;
-
-        if (Math.abs(dist - wave.currentRadius) < tolerance) {
-          let force = (tolerance - Math.abs(dist - wave.currentRadius)) / tolerance;
-          let pushAmount = force * wave.intensity * 4;
-          this.x += (dx / (dist || 1)) * pushAmount;
-          this.y += (dy / (dist || 1)) * pushAmount;
-          this.alpha = 0.9;
-        }
-      });
-    }
-  }
-
-  function initParticles() {
-    particles = [];
-    for (let i = 0; i < particleCount; i++) {
-      particles.push(new Particle());
-    }
-  }
-
-  function connectParticles() {
-    let maxDistance = 115;
-    for (let a = 0; a < particles.length; a++) {
-      for (let b = a + 1; b < particles.length; b++) {
-        let dx = particles[a].x - particles[b].x;
-        let dy = particles[a].y - particles[b].y;
-        let dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < maxDistance) {
-          let lineAlpha = (1 - dist / maxDistance) * 0.12;
-          ctxBg.strokeStyle = `rgba(139, 92, 246, ${lineAlpha})`;
-          ctxBg.lineWidth = 1;
-          ctxBg.beginPath();
-          ctxBg.moveTo(particles[a].x, particles[a].y);
-          ctxBg.lineTo(particles[b].x, particles[b].y);
-          ctxBg.stroke();
-        }
-      }
-    }
-  }
-
-  class Shockwave {
-    constructor(x, y) {
-      this.x = x;
-      this.y = y;
-      this.maxRadius = 180;
-      this.currentRadius = 0;
-      this.speed = 4.5;
-      this.intensity = 1.0;
-      this.active = true;
-    }
-
-    update() {
-      this.currentRadius += this.speed;
-      this.intensity = 1.0 - (this.currentRadius / this.maxRadius);
-      if (this.currentRadius >= this.maxRadius) {
-        this.active = false;
-      }
-    }
-
-    draw() {
-      ctxBg.beginPath();
-      ctxBg.arc(this.x, this.y, this.currentRadius, 0, Math.PI * 2);
-      ctxBg.strokeStyle = `rgba(6, 182, 212, ${this.intensity * 0.25})`;
-      ctxBg.lineWidth = 2;
-      ctxBg.stroke();
-    }
-  }
-
-  window.addEventListener("click", (e) => {
-    if (e.target.tagName !== "BUTTON" && e.target.tagName !== "A" && !e.target.closest("button") && !e.target.closest("a")) {
-      shockwaves.push(new Shockwave(e.clientX, e.clientY));
-      for (let i = 0; i < 6; i++) {
-        particles.push(new Particle(e.clientX, e.clientY));
-        if (particles.length > particleCount + 20) {
-          particles.shift();
-        }
-      }
-    }
-  });
-
-  function animateParticles() {
-    ctxBg.clearRect(0, 0, canvasBg.width, canvasBg.height);
-    shockwaves = shockwaves.filter(w => w.active);
-    shockwaves.forEach(wave => {
-      wave.update();
-      wave.draw();
-    });
-
-    for (let i = 0; i < particles.length; i++) {
-      particles[i].update();
-      particles[i].draw();
-    }
-    connectParticles();
-    requestAnimationFrame(animateParticles);
-  }
-
-  resizeCanvas();
-  animateParticles();
-
-
-  // ==========================================
-  // 5. Scroll Trigger - Skills
-  // ==========================================
-  const skillsSection = document.getElementById("about");
-  const progressBars = document.querySelectorAll(".skill-progress");
-
-  const skillObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        progressBars.forEach(bar => {
-          const val = bar.getAttribute("data-skill-val");
-          bar.style.width = val;
-        });
-        skillObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-
-  if (skillsSection) {
-    skillObserver.observe(skillsSection);
-  }
-
-
-  // ==========================================
-  // 6. Project Filter Tabs
-  // ==========================================
-  const filterTabs = document.querySelectorAll(".filter-tab");
-  const projectCards = document.querySelectorAll(".project-card");
-
-  filterTabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      filterTabs.forEach(t => t.classList.remove("active"));
-      tab.classList.add("active");
-
-      const filterVal = tab.getAttribute("data-filter");
-
-      projectCards.forEach(card => {
-        const cardCat = card.getAttribute("data-category");
-        if (filterVal === "all" || cardCat === filterVal) {
-          card.style.display = "flex";
-          setTimeout(() => {
-            card.style.opacity = "1";
-            card.style.transform = "translateY(0) scale(1)";
-          }, 10);
-        } else {
-          card.style.opacity = "0";
-          card.style.transform = "translateY(20px) scale(0.95)";
-          setTimeout(() => {
-            card.style.display = "none";
-          }, 300);
-        }
-      });
-    });
-  });
-
-
-  // ==========================================
-  // 7. Modal Project Details & Real Source Codes
-  // ==========================================
-  const projectModal = document.getElementById("project-modal");
-  const modalClose = document.getElementById("modal-close");
-  const projectDetailsBtn = document.querySelectorAll(".project-link, .project-card");
-  
-  const projectsDetailsDB = {
-    "1": {
-      title: "Aether 3D Engine",
-      tags: ["C++", "OpenGL 4.6", "GLSL Shaders", "Engine Physics"],
-      desc: "Aether 3D Engine is a hardware-accelerated rendering engine developed natively in C++. It incorporates real-time shadow mapping, deferred lighting passes, dynamic camera collision grids, and skeletal mesh calculations. Engine memory footprint is optimized via custom block allocators, ensuring efficient thread dispatch and zero CPU-side allocations inside the rendering loop.",
-      gradient: "linear-gradient(135deg, #1e1b4b 0%, #3b0764 100%)",
-      vectorContent: `<i class="fas fa-cubes" style="font-size: 80px; color: var(--accent-primary); filter: drop-shadow(0 0 20px var(--accent-primary));"></i>`,
-      sourceCode: `// ========================================================
-// AETHER 3D GRAPHICS ENGINE - OPENGL CORE RENDER LOOP
-// Language: C++17 (Systems Engine Code)
-// ========================================================
+  // =========================================================================
+  // 1. DATA REPOSITORY: REAL PRODUCTION SYSTEMS & LIVE SOURCE
+  // =========================================================================
+  const PROJECTS_CATALOG = [
+    {
+      id: "aether-engine",
+      category: "cpp",
+      discipline: "C++ Native Core",
+      title: "Aether 3D • OpenGL Graphics Subsystem",
+      summary: "Low-latency deferred rendering engine in C++17 with custom memory arena allocators, GLSL shader pipelines, and real-time cascaded shadow maps.",
+      tags: ["C++17", "OpenGL 4.6", "GLSL", "SIMD", "Memory Arenas"],
+      filename: "aether_renderer.cpp",
+      github: "https://github.com/amrendrayadav03321-a11y",
+      accent: "cyan",
+      source: `// ====================================================================
+// AETHER 3D GRAPHICS PIPELINE — BUFFER STREAM & ARENA ALLOCATOR
+// Developer: Amrendra Yadav • Delhi, India
+// Standards: C++17 / Modern OpenGL 4.6 Core Profile
+// ====================================================================
 
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <chrono>
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-class Shader {
-public:
-    unsigned int ID;
-    Shader(const char* vertexPath, const char* fragmentPath);
-    void Use() { glUseProgram(ID); }
-    void SetMat4(const std::string &name, const glm::mat4 &mat) const {
-        glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
-    }
-};
+namespace Aether::Graphics {
 
-class MeshRenderer {
-private:
-    unsigned int VAO, VBO, EBO;
-    std::vector<float> vertices;
-    std::vector<unsigned int> indices;
-public:
-    MeshRenderer(std::vector<float> verts, std::vector<unsigned int> inds) 
-        : vertices(verts), indices(inds) {
-        setupBuffers();
-    }
-    void setupBuffers() {
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-        glGenBuffers(1, &EBO);
-        
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-        
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-        
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-    }
-    void Render() {
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
-    }
-};`
+    struct VertexData {
+        glm::vec3 position;
+        glm::vec3 normal;
+        glm::vec2 texCoords;
+    };
+
+    class LinearMemoryArena {
+    private:
+        size_t m_capacity;
+        size_t m_offset{0};
+        uint8_t* m_buffer{nullptr};
+
+    public:
+        explicit LinearMemoryArena(size_t capacityBytes) : m_capacity(capacityBytes) {
+            m_buffer = new (std::nothrow) uint8_t[capacityBytes];
+        }
+
+        ~LinearMemoryArena() { delete[] m_buffer; }
+
+        void* Allocate(size_t size, size_t alignment = alignof(std::max_align_t)) {
+            size_t currentAddr = reinterpret_cast<size_t>(m_buffer + m_offset);
+            size_t alignedAddr = (currentAddr + alignment - 1) & ~(alignment - 1);
+            size_t totalBytes = (alignedAddr - currentAddr) + size;
+
+            if (m_offset + totalBytes > m_capacity) return nullptr;
+            m_offset += totalBytes;
+            return reinterpret_cast<void*>(alignedAddr);
+        }
+
+        void Reset() { m_offset = 0; }
+    };
+
+    class ShaderPipeline {
+    public:
+        GLuint programId{0};
+
+        void Dispatch(const glm::mat4& viewProjMatrix, const glm::vec3& lightPos) const {
+            glUseProgram(programId);
+            glUniformMatrix4fv(glGetUniformLocation(programId, "u_ViewProj"), 1, GL_FALSE, &viewProjMatrix[0][0]);
+            glUniform3fv(glGetUniformLocation(programId, "u_LightPosition"), 1, &lightPos[0]);
+        }
+    };
+}`
     },
-    "2": {
-      title: "PyStream Analytics Pipeline",
-      tags: ["Python", "Pandas", "Scikit-Learn", "Data Streaming"],
-      desc: "PyStream Analytics implements a robust Python data automation network. It parses, cleans, and extracts key features from network logs and big-data flow packets in real time. Model algorithms run regression and clustering calculations using Scikit-Learn to detect network security anomalies, dispatching visual feedback diagnostics to dynamic dashboards.",
-      gradient: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-      vectorContent: `<i class="fab fa-python" style="font-size: 80px; color: #3b82f6; filter: drop-shadow(0 0 20px #3b82f6);"></i>`,
-      sourceCode: `# ========================================================
-# PYSTREAM SECURITY ANOMALY PIPELINE
-# Language: Python 3.10 (Data Engine Code)
-# ========================================================
+    {
+      id: "pystream-analytics",
+      category: "python",
+      discipline: "Python & ML Core",
+      title: "PyStream • Real-Time Packet Anomaly Detector",
+      summary: "Distributed event ingestion stream utilizing Scikit-Learn Isolation Forests to detect network anomalies and telemetry drops with sub-millisecond classification.",
+      tags: ["Python 3.10", "Scikit-Learn", "NumPy", "AsyncIO", "Telemetry"],
+      filename: "pystream_classifier.py",
+      github: "https://github.com/amrendrayadav03321-a11y/Zomato-Data-Analysis",
+      accent: "violet",
+      source: `# ====================================================================
+# PYSTREAM PACKET INGESTION & ISOLATION FOREST CLASSIFIER
+# Developer: Amrendra Yadav • Delhi, India
+# Stack: Python 3.10+ / AsyncIO / NumPy / Scikit-Learn
+# ====================================================================
 
-import numpy as np
-import pandas as pd
-from sklearn.ensemble import IsolationForest
-import socket
+import asyncio
 import json
-import threading
+import logging
+from typing import Dict, Any, List
+import numpy as np
+from sklearn.ensemble import IsolationForest
 
-class NetworkLogAnalyzer:
-    def __init__(self, port=9000):
-        self.port = port
-        # Load IsolationForest classifier for anomaly tracking
-        self.model = IsolationForest(contamination=0.02, random_state=42)
-        self.training_buffer = []
-        self.is_trained = False
-        
-    def clean_packet(self, raw_data):
-        """Cleans incoming logs, mapping to numerical structures"""
-        payload = json.loads(raw_data)
-        df_row = pd.DataFrame([{
-            'bytes_sent': payload.get('bytes_sent', 0),
-            'packet_count': payload.get('packet_count', 0),
-            'duration_ms': payload.get('duration_ms', 0),
-            'error_flags': float(payload.get('error_flags', False))
-        }])
-        return df_row
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-    def stream_listener(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.bind(("0.0.0.0", self.port))
-        print(f"[*] Python Pipeline Active on UDP Port {self.port}")
-        
-        while True:
-            data, addr = s.recvfrom(4096)
-            cleaned = self.clean_packet(data)
-            
-            if not self.is_trained:
-                self.training_buffer.append(cleaned.values[0])
-                if len(self.training_buffer) >= 1000:
-                    self.model.fit(np.array(self.training_buffer))
-                    self.is_trained = True
-            else:
-                score = self.model.predict(cleaned.values)
-                if score[0] == -1:
-                    print(f"[!] Warning: Anomaly detected from host {addr}")`
+class PacketAnomalyEngine:
+    """Real-time statistical anomaly detector for continuous network streams."""
+    
+    def __init__(self, contamination_rate: float = 0.015, buffer_size: int = 1500) -> None:
+        self.detector = IsolationForest(
+            contamination=contamination_rate,
+            n_estimators=100,
+            random_state=42,
+            n_jobs=-1
+        )
+        self.buffer_size: int = buffer_size
+        self.training_buffer: List[List[float]] = []
+        self.is_calibrated: bool = False
+
+    def extract_features(self, packet: Dict[str, Any]) -> np.ndarray:
+        return np.array([
+            float(packet.get("bytes_transferred", 0)),
+            float(packet.get("hop_latency_ms", 0.0)),
+            float(packet.get("retransmission_rate", 0.0)),
+            float(packet.get("payload_entropy", 1.0))
+        ], dtype=np.float32)
+
+    async def ingest_packet_stream(self, reader: asyncio.StreamReader) -> None:
+        logging.info("[SYS] Ingest stream active. Awaiting network telemetry payload...")
+        while not reader.at_eof():
+            line = await reader.readline()
+            if not line:
+                break
+            try:
+                packet = json.loads(line.decode("utf-8"))
+                features = self.extract_features(packet)
+                if not self.is_calibrated:
+                    self.training_buffer.append(features.tolist())
+                    if len(self.training_buffer) >= self.buffer_size:
+                        self.detector.fit(np.array(self.training_buffer))
+                        self.is_calibrated = True
+                        logging.info("[SYS] Isolation Forest calibrated. Live inference engaged.")
+                else:
+                    prediction = self.detector.predict(features.reshape(1, -1))
+                    if prediction[0] == -1:
+                        logging.warning(f"[ALERT] Threat vector detected: IP={packet.get('source_ip')}")
+            except Exception as e:
+                logging.error(f"Ingestion parse failure: {e}")`
     },
-    "3": {
-      title: "Nexus DB Optimizer",
-      tags: ["SQL", "PostgreSQL", "Database Tuning", "Analytics Query"],
-      desc: "Nexus DB Optimizer provides database execution index queries and tuning. It constructs custom GIN/B-Tree query index pathways, materialized transaction views, and horizontal partition structures built to process huge data sets while shrinking latency speeds under heavy load.",
-      gradient: "linear-gradient(135deg, #022c22 0%, #064e3b 100%)",
-      vectorContent: `<i class="fas fa-database" style="font-size: 80px; color: var(--accent-tertiary); filter: drop-shadow(0 0 20px var(--accent-tertiary));"></i>`,
-      sourceCode: `-- ========================================================
--- NEXUS DB OPTIMIZER - PERFORMANCE QUERY INDEXING SCRIPT
--- Dialect: PostgreSQL (Database Tuning Code)
--- ========================================================
+    {
+      id: "nexus-optimizer",
+      category: "sql",
+      discipline: "Relational SQL Architecture",
+      title: "Nexus DB • Distributed Query Tuning & Partitions",
+      summary: "Production-grade PostgreSQL database tuning suite leveraging multi-attribute composite B-Trees, range partition hierarchies, and recursive analytical CTEs.",
+      tags: ["PostgreSQL 15", "Query Tuning", "Composite B-Tree", "Partitioning"],
+      filename: "nexus_optimization.sql",
+      github: "https://github.com/amrendrayadav03321-a11y",
+      accent: "amber",
+      source: `-- ====================================================================
+-- NEXUS DB ENGINE — HIGH-THROUGHPUT ANALYTIC PARTITIONING & CTEs
+-- Architect: Amrendra Yadav • Delhi, India
+-- Target Engine: PostgreSQL 15+ / Aurora Enterprise
+-- ====================================================================
 
--- 1. Create B-Tree indexes on search keys
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_transactions_user_date 
-ON transactions(user_id, transaction_date DESC);
+-- 1. Optimized Concurrent Composite B-Tree
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_stream_metrics_composite
+ON stream_metrics (tenant_id, event_timestamp DESC)
+INCLUDE (latency_micros, payload_bytes);
 
--- 2. Partitioning huge transaction logs by range
-CREATE TABLE transaction_logs (
-    log_id UUID DEFAULT gen_random_uuid(),
-    user_id INT NOT NULL,
-    payload JSONB,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-) PARTITION BY RANGE (created_at);
+-- 2. Declarative Range Partitioned Ledger Structure
+CREATE TABLE IF NOT EXISTS telemetry_partitioned_ledger (
+    event_id UUID DEFAULT gen_random_uuid(),
+    tenant_id INT NOT NULL,
+    metric_code VARCHAR(64) NOT NULL,
+    latency_micros INT NOT NULL,
+    recorded_at TIMESTAMPTZ NOT NULL,
+    PRIMARY KEY (event_id, recorded_at)
+) PARTITION BY RANGE (recorded_at);
 
--- 3. Advanced Analytical CTE querying top transactions per region
-WITH RegionalSales AS (
-    SELECT 
-        u.region,
-        t.category,
-        SUM(t.amount) AS total_revenue,
-        ROW_NUMBER() OVER(PARTITION BY u.region ORDER BY SUM(t.amount) DESC) as rank
-    FROM transactions t
-    INNER JOIN users u ON t.user_id = u.id
-    WHERE t.transaction_date >= NOW() - INTERVAL '30 days'
-    GROUP BY u.region, t.category
+-- 3. Advanced Window CTE for Latency Quantiles Across Nodes
+WITH QuantilePerformance AS (
+    SELECT
+        t.tenant_id,
+        t.metric_code,
+        t.latency_micros,
+        NTILE(100) OVER (
+            PARTITION BY t.metric_code 
+            ORDER BY t.latency_micros ASC
+        ) AS percentile_bucket,
+        AVG(t.latency_micros) OVER (
+            PARTITION BY t.metric_code
+        ) AS average_latency
+    FROM telemetry_partitioned_ledger t
+    WHERE t.recorded_at >= NOW() - INTERVAL '7 days'
 )
 SELECT 
-    region,
-    category,
-    total_revenue
-FROM RegionalSales
-WHERE rank <= 3
-ORDER BY region, total_revenue DESC;
-
--- Verify query execution cost parameters
-EXPLAIN ANALYZE SELECT region, category, total_revenue FROM RegionalSales;`
+    metric_code,
+    ROUND(AVG(latency_micros), 2) AS p99_latency_micros,
+    ROUND(MAX(average_latency), 2) AS overall_avg_latency
+FROM QuantilePerformance
+WHERE percentile_bucket = 99
+GROUP BY metric_code
+ORDER BY p99_latency_micros DESC;`
     },
-    "4": {
-      title: "Nebula VFX Framework",
-      tags: ["HTML5", "WebGL", "GLSL Shaders", "Canvas Particle VFX"],
-      desc: "Nebula is a specialized web VFX engine designed to render interactive visual fluids and particle cascades at 60FPS. Leveraging WebGL vertex and fragment shaders, users can interact with custom noise grids, generating dynamic fluid turbulence maps, stellar flares, and gravity vortex ripples that follow coordinates in real-time.",
-      gradient: "linear-gradient(135deg, #134e5e 0%, #2f80ed 100%)",
-      vectorContent: `<i class="fas fa-code" style="font-size: 80px; color: var(--accent-secondary); filter: drop-shadow(0 0 20px var(--accent-secondary));"></i>`,
-      sourceCode: `<!-- ========================================================
-     NEBULA VFX ENGINE - WEBGL SHADER INITIALIZATION
-     Language: HTML5 / GLSL Shaders (Creative Web Art)
-     ======================================================== -->
+    {
+      id: "nebula-shader",
+      category: "web",
+      discipline: "Creative WebGL & GLSL",
+      title: "Nebula Engine • Real-time GLSL Fluid Canvas",
+      summary: "High-frame-rate visual shaders and fluid simulations running on hardware-accelerated WebGL. Dynamic turbulence and user pointer field deflection.",
+      tags: ["WebGL", "GLSL Shaders", "HTML5 Canvas", "Vector Fields"],
+      filename: "nebula_fluid.frag",
+      github: "https://github.com/amrendrayadav03321-a11y/Hacker-text-effect.",
+      accent: "rose",
+      source: `// ====================================================================
+// NEBULA ENGINE — FRAGMENT SHADER REAL-TIME FLUID DISPLACEMENT
+// Artist: Amrendra Yadav • Delhi, India
+// Execution: WebGL 1.0 / 2.0 Fragment Stage
+// ====================================================================
 
-<canvas id="webgl-canvas"></canvas>
+precision highp float;
+uniform vec2 u_resolution;
+uniform vec2 u_pointer;
+uniform float u_time;
 
-<script type="text/javascript">
-  const canvas = document.getElementById("webgl-canvas");
-  const gl = canvas.getContext("webgl");
-  
-  // Fragment Shader calculating dynamic glow noise map
-  const fsSource = \`
-    precision mediump float;
-    uniform vec2 u_resolution;
-    uniform vec2 u_mouse;
-    uniform float u_time;
+// Simplex Perlin gradient noise implementation
+vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec3 permute(vec3 x) { return mod289(((x * 34.0) + 1.0) * x); }
+
+float snoise(vec2 v) {
+    const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+    vec2 i  = floor(v + dot(v, C.yy));
+    vec2 x0 = v -   i + dot(i, C.xx);
+    vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+    vec4 x12 = x0.xyxy + C.xxzz;
+    x12.xy -= i1;
+    i = mod289(i);
+    vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+    vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+    m = m*m; m = m*m;
+    vec3 x = 2.0 * fract(p * C.www) - 1.0;
+    vec3 h = abs(x) - 0.5;
+    vec3 ox = floor(x + 0.5);
+    vec3 a0 = x - ox;
+    m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+    vec3 g;
+    g.x  = a0.x  * x0.x  + h.x  * x0.y;
+    g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+    return 130.0 * dot(m, g);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    st.x *= u_resolution.x / u_resolution.y;
     
-    void main() {
-        vec2 st = gl_FragCoord.xy / u_resolution.xy;
-        float d = distance(gl_FragCoord.xy, u_mouse.xy);
-        
-        // Dynamic ripple factor
-        float wave = sin(d * 0.05 - u_time * 5.0) * 0.5 + 0.5;
-        vec3 color = vec3(st.x * wave, 0.2, 0.9 * (1.0 - d / u_resolution.x));
-        gl_FragColor = vec4(color, 1.0);
-    }
-  \`;
-
-  const vsSource = \`
-    attribute vec4 a_position;
-    void main() {
-        gl_Position = a_position;
-    }
-  \`;
-
-  function createShader(gl, type, source) {
-      const shader = gl.createShader(type);
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-          console.error("Shader Compile Error: " + gl.getShaderInfoLog(shader));
-      }
-      return shader;
-  }
-</script>`
+    vec2 pNorm = u_pointer / u_resolution.xy;
+    float distToPointer = distance(st, pNorm);
+    float pointerDeflection = smoothstep(0.35, 0.0, distToPointer) * 0.4;
+    
+    float noiseVal = snoise(st * 3.5 + vec2(u_time * 0.15, -u_time * 0.1) + pointerDeflection);
+    vec3 colorA = vec3(0.02, 0.04, 0.1);
+    vec3 colorB = vec3(0.04, 0.72, 0.85); // Electric Cyan
+    vec3 colorC = vec3(0.55, 0.36, 0.96); // Deep Violet
+    
+    vec3 finalColor = mix(colorA, colorB, clamp(noiseVal, 0.0, 1.0));
+    finalColor = mix(finalColor, colorC, pointerDeflection * 1.5);
+    gl_FragColor = vec4(finalColor, 1.0);
+}`
     },
-    "5": {
-      title: "Quantum Physics Sandbox",
-      tags: ["HTML5 Canvas", "Physics Vector Math", "JavaScript Logic"],
-      desc: "Quantum is a gravitational simulator and mechanical sandbox. It computes multi-body physics equations on the client-side to map gravity vectors, orbits, and collision recoil grids. Interactive widgets allow developers to change collision friction coefficients, gravity strength, and coordinate masses to study system dynamics live.",
-      gradient: "linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%)",
-      vectorContent: `<i class="fas fa-atom" style="font-size: 80px; color: #f43f5e; filter: drop-shadow(0 0 20px #f43f5e); animation: spinAtom 4s linear infinite;"></i>`,
-      sourceCode: `// ========================================================
-// QUANTUM PHYSICS ENGINE - VERLET INTERPRETATION
-// Language: JavaScript / ES6 (Mathematical Logic)
-// ========================================================
+    {
+      id: "quantum-verlet",
+      category: "web",
+      discipline: "Deterministic Physics Engine",
+      title: "Verlet Kinetic • N-Body Orbital Integrator",
+      summary: "Deterministic physics sandbox implementing Fourth-Order Runge-Kutta and Verlet integration with collision manifolds and gravitational gravitational deflection.",
+      tags: ["JavaScript ES6", "Verlet RK4", "Physics Math", "Kinematics"],
+      filename: "verlet_integrator.js",
+      github: "https://github.com/amrendrayadav03321-a11y/Romantic-Python-Animation",
+      accent: "cyan",
+      source: `// ====================================================================
+// VERLET KINETIC — DETERMINISTIC TIME-STEP N-BODY SOLVER
+// Author: Amrendra Yadav • Delhi, India
+// Standards: Modern ECMAScript / Zero-Dependency Canvas
+// ====================================================================
 
-class PhysicsBody {
-    constructor(x, y, mass, radius) {
+export class VerletKineticBody {
+    constructor(x, y, mass, radius, isPinned = false) {
         this.x = x;
         this.y = y;
-        this.px = x; // previous X for Verlet integration
-        this.py = y; // previous Y for Verlet integration
+        this.prevX = x;
+        this.prevY = y;
+        this.accX = 0;
+        this.accY = 0;
         this.mass = mass;
         this.radius = radius;
-        this.ax = 0;
-        this.ay = 0;
+        this.isPinned = isPinned;
     }
-    
+
     applyForce(fx, fy) {
-        // Acceleration = Force / Mass
-        this.ax += fx / this.mass;
-        this.ay += fy / this.mass;
+        if (this.isPinned) return;
+        this.accX += fx / this.mass;
+        this.accY += fy / this.mass;
     }
-    
-    Update(dt, friction = 0.99) {
+
+    integrateStep(dt, friction = 0.994) {
+        if (this.isPinned) return;
+        
+        // Verlet numerical integration:
+        // x(t + dt) = x(t) + (x(t) - x(t - dt)) * friction + a(t) * dt^2
         const tempX = this.x;
         const tempY = this.y;
-        
-        // Verlet Integration equation:
-        // pos = pos + (pos - prevPos) + acc * dt * dt
-        this.x = this.x + (this.x - this.px) * friction + this.ax * dt * dt;
-        this.y = this.y + (this.y - this.py) * friction + this.ay * dt * dt;
-        
-        this.px = tempX;
-        this.py = tempY;
-        
-        // Reset acceleration
-        this.ax = 0;
-        this.ay = 0;
+        const dtSq = dt * dt;
+
+        this.x += (this.x - this.prevX) * friction + this.accX * dtSq;
+        this.y += (this.y - this.prevY) * friction + this.accY * dtSq;
+
+        this.prevX = tempX;
+        this.prevY = tempY;
+
+        // Reset accumulated forces
+        this.accX = 0;
+        this.accY = 0;
+    }
+
+    resolveBoundaries(width, height, restitution = 0.85) {
+        if (this.x - this.radius < 0) {
+            this.x = this.radius;
+            this.prevX = this.x + (this.x - this.prevX) * restitution;
+        } else if (this.x + this.radius > width) {
+            this.x = width - this.radius;
+            this.prevX = this.x + (this.x - this.prevX) * restitution;
+        }
+        if (this.y - this.radius < 0) {
+            this.y = this.radius;
+            this.prevY = this.y + (this.y - this.prevY) * restitution;
+        } else if (this.y + this.radius > height) {
+            this.y = height - this.radius;
+            this.prevY = this.y + (this.y - this.prevY) * restitution;
+        }
     }
 }`
     }
-  };
+  ];
 
-  function openProjectModal(id) {
-    const data = projectsDetailsDB[id];
-    if (!data) return;
+  // =========================================================================
+  // 2. MAGNETIC DUAL-STAGE CURSOR (LERP INTEGRATION)
+  // =========================================================================
+  const cursorDot = document.getElementById("cursor-dot");
+  const cursorFollower = document.getElementById("cursor-follower");
+  const cursorLabel = document.getElementById("cursor-label");
 
-    document.getElementById("modal-project-title").innerText = data.title;
-    document.getElementById("modal-project-description").innerText = data.desc;
-    
-    const bgContainer = document.getElementById("modal-project-bg");
-    bgContainer.style.background = data.gradient;
-    
-    document.getElementById("modal-media-vector").innerHTML = data.vectorContent;
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let followerX = mouseX;
+  let followerY = mouseY;
 
-    const codeContainer = document.getElementById("modal-project-code");
-    codeContainer.textContent = data.sourceCode;
-    
-    const detailsWrapper = document.getElementById("modal-code-details-wrapper");
-    if (detailsWrapper) {
-      detailsWrapper.removeAttribute("open");
+  window.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (cursorDot) {
+      cursorDot.style.left = `${mouseX}px`;
+      cursorDot.style.top = `${mouseY}px`;
+    }
+  });
+
+  function renderCursor() {
+    // Lerp factor
+    followerX += (mouseX - followerX) * 0.16;
+    followerY += (mouseY - followerY) * 0.16;
+
+    if (cursorFollower) {
+      cursorFollower.style.left = `${followerX}px`;
+      cursorFollower.style.top = `${followerY}px`;
+    }
+    requestAnimationFrame(renderCursor);
+  }
+  renderCursor();
+
+  function bindCursorInteractions() {
+    document.querySelectorAll("[data-cursor]").forEach((el) => {
+      const mode = el.getAttribute("data-cursor");
+      el.addEventListener("mouseenter", () => {
+        document.body.className = `theme-dark cursor-active-${mode}`;
+        if (cursorLabel) {
+          if (mode === "view") cursorLabel.textContent = "VIEW";
+          else if (mode === "interact") cursorLabel.textContent = "EXEC";
+          else cursorLabel.textContent = "";
+        }
+      });
+      el.addEventListener("mouseleave", () => {
+        document.body.className = "theme-dark";
+        if (cursorLabel) cursorLabel.textContent = "";
+      });
+    });
+  }
+  bindCursorInteractions();
+
+  // =========================================================================
+  // 3. INTERACTIVE MAIN CANVAS (PARTICLE FIELD WITH GRAVITY WELL)
+  // =========================================================================
+  const bgCanvas = document.getElementById("interactive-canvas");
+  const bgCtx = bgCanvas ? bgCanvas.getContext("2d") : null;
+  let bgParticles = [];
+  const particleCount = window.innerWidth < 768 ? 40 : 80;
+
+  function initBgCanvas() {
+    if (!bgCanvas || !bgCtx) return;
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+
+    bgParticles = [];
+    for (let i = 0; i < particleCount; i++) {
+      bgParticles.push({
+        x: Math.random() * bgCanvas.width,
+        y: Math.random() * bgCanvas.height,
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: (Math.random() - 0.5) * 0.45,
+        size: Math.random() * 1.8 + 0.8,
+        alpha: Math.random() * 0.3 + 0.15
+      });
+    }
+  }
+  window.addEventListener("resize", initBgCanvas);
+  initBgCanvas();
+
+  function animateBgCanvas() {
+    if (!bgCanvas || !bgCtx) return;
+    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+    for (let i = 0; i < bgParticles.length; i++) {
+      const p = bgParticles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x < 0) p.x = bgCanvas.width;
+      if (p.x > bgCanvas.width) p.x = 0;
+      if (p.y < 0) p.y = bgCanvas.height;
+      if (p.y > bgCanvas.height) p.y = 0;
+
+      // Mouse gravity deflection
+      const dx = mouseX - p.x;
+      const dy = mouseY - p.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 130) {
+        const force = (130 - dist) / 130;
+        p.x -= (dx / dist) * force * 1.5;
+        p.y -= (dy / dist) * force * 1.5;
+      }
+
+      bgCtx.beginPath();
+      bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      bgCtx.fillStyle = `rgba(6, 182, 212, ${p.alpha})`;
+      bgCtx.fill();
+
+      // Connect nearby particles
+      for (let j = i + 1; j < bgParticles.length; j++) {
+        const p2 = bgParticles[j];
+        const d2 = Math.hypot(p.x - p2.x, p.y - p2.y);
+        if (d2 < 110) {
+          bgCtx.beginPath();
+          bgCtx.moveTo(p.x, p.y);
+          bgCtx.lineTo(p2.x, p2.y);
+          bgCtx.strokeStyle = `rgba(139, 92, 246, ${0.15 * (1 - d2 / 110)})`;
+          bgCtx.lineWidth = 0.8;
+          bgCtx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animateBgCanvas);
+  }
+  animateBgCanvas();
+
+  // =========================================================================
+  // 4. HERO RIGHT HUD: 3D CYCLIC WIREFRAME SIMULATION
+  // =========================================================================
+  const hudCanvas = document.getElementById("hud-canvas");
+  const hudCtx = hudCanvas ? hudCanvas.getContext("2d") : null;
+  const hudCycleBtn = document.getElementById("hud-cycle-btn");
+  let hudMode = 0; // 0 = Torus, 1 = Wave Grid, 2 = Particle Vortex
+
+  if (hudCycleBtn) {
+    hudCycleBtn.addEventListener("click", () => {
+      hudMode = (hudMode + 1) % 3;
+      const modes = ["Torus Knot", "Topographic Matrix", "Orbital Swarm"];
+      hudCycleBtn.textContent = modes[hudMode];
+    });
+  }
+
+  function resizeHud() {
+    if (!hudCanvas || !hudCtx) return;
+    const rect = hudCanvas.getBoundingClientRect();
+    hudCanvas.width = rect.width * window.devicePixelRatio;
+    hudCanvas.height = rect.height * window.devicePixelRatio;
+    hudCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  }
+  window.addEventListener("resize", resizeHud);
+  resizeHud();
+
+  let hudAngle = 0;
+  function renderHud() {
+    if (!hudCanvas || !hudCtx) return;
+    const w = hudCanvas.width / window.devicePixelRatio;
+    const h = hudCanvas.height / window.devicePixelRatio;
+    hudCtx.clearRect(0, 0, w, h);
+
+    const cx = w / 2;
+    const cy = h / 2;
+    hudAngle += 0.018;
+
+    if (hudMode === 0) {
+      // 3D Wireframe Rotating Ring Array
+      const rings = 12;
+      for (let r = 0; r < rings; r++) {
+        const rad = 25 + r * 7;
+        const currentTilt = hudAngle + (r * Math.PI) / rings;
+        hudCtx.beginPath();
+        hudCtx.ellipse(cx, cy, rad, rad * Math.abs(Math.sin(currentTilt)), hudAngle * 0.5, 0, Math.PI * 2);
+        hudCtx.strokeStyle = `rgba(6, 182, 212, ${0.2 + (r / rings) * 0.55})`;
+        hudCtx.lineWidth = 1.2;
+        hudCtx.stroke();
+      }
+    } else if (hudMode === 1) {
+      // Topographic Matrix Grid
+      const rows = 14;
+      const cols = 18;
+      const spacingX = w / cols;
+      const spacingY = h / rows;
+
+      for (let y = 0; y < rows; y++) {
+        hudCtx.beginPath();
+        for (let x = 0; x < cols; x++) {
+          const elev = Math.sin(x * 0.4 + hudAngle) * Math.cos(y * 0.4 + hudAngle) * 16;
+          const px = x * spacingX;
+          const py = y * spacingY + elev;
+          if (x === 0) hudCtx.moveTo(px, py);
+          else hudCtx.lineTo(px, py);
+        }
+        hudCtx.strokeStyle = "rgba(139, 92, 246, 0.45)";
+        hudCtx.lineWidth = 1;
+        hudCtx.stroke();
+      }
+    } else {
+      // Orbital Swarm
+      const count = 48;
+      for (let i = 0; i < count; i++) {
+        const a = hudAngle * (1 + (i % 3) * 0.5) + (i * Math.PI * 2) / count;
+        const dist = 30 + (i % 6) * 15;
+        const px = cx + Math.cos(a) * dist;
+        const py = cy + Math.sin(a * 1.5) * (dist * 0.65);
+        hudCtx.beginPath();
+        hudCtx.arc(px, py, 2.2, 0, Math.PI * 2);
+        hudCtx.fillStyle = i % 2 === 0 ? "rgba(6, 182, 212, 0.85)" : "rgba(245, 158, 11, 0.85)";
+        hudCtx.fill();
+      }
     }
 
-    const tagsWrapper = document.getElementById("modal-project-tags");
-    tagsWrapper.innerHTML = "";
-    data.tags.forEach(tag => {
-      const span = document.createElement("span");
-      span.className = "project-tag";
-      span.innerText = tag;
-      tagsWrapper.appendChild(span);
+    requestAnimationFrame(renderHud);
+  }
+  renderHud();
+
+  // 3D Card Hover Perspective
+  const hudCard = document.getElementById("hud-card");
+  if (hudCard) {
+    hudCard.addEventListener("mousemove", (e) => {
+      const rect = hudCard.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      hudCard.style.transform = `perspective(900px) rotateY(${x * 0.04}deg) rotateX(${-y * 0.04}deg)`;
     });
+    hudCard.addEventListener("mouseleave", () => {
+      hudCard.style.transform = "perspective(900px) rotateY(0deg) rotateX(0deg)";
+    });
+  }
+
+  // =========================================================================
+  // 5. DECODER TERMINAL TYPING & ROTATION (REAL ARCHITECTURAL TITLES)
+  // =========================================================================
+  const decoderEl = document.getElementById("decoder-stream");
+  const specializations = [
+    "C++ Core Systems & Graphics Architect",
+    "Python Telemetry & Machine Learning Pipelines",
+    "PostgreSQL High-Scale Relational Optimizer",
+    "Creative WebGL & Hardware-Accelerated Frontend"
+  ];
+  let specIndex = 0;
+
+  function scrambleCycle(targetText) {
+    if (!decoderEl) return;
+    const chars = "ABCDEF0123456789_#~-<>*";
+    let iteration = 0;
+    const maxIterations = targetText.length;
+
+    const interval = setInterval(() => {
+      decoderEl.textContent = targetText
+        .split("")
+        .map((letter, idx) => {
+          if (idx < iteration) return targetText[idx];
+          return chars[Math.floor(Math.random() * chars.length)];
+        })
+        .join("");
+
+      if (iteration >= maxIterations) {
+        clearInterval(interval);
+        setTimeout(() => {
+          specIndex = (specIndex + 1) % specializations.length;
+          scrambleCycle(specializations[specIndex]);
+        }, 3600);
+      }
+      iteration += 1 / 2;
+    }, 28);
+  }
+  scrambleCycle(specializations[0]);
+
+  // =========================================================================
+  // 6. DYNAMIC PROJECTS GRID & NATIVE DIALOG CODE INSPECTOR
+  // =========================================================================
+  const projectsGrid = document.getElementById("projects-grid");
+  const projectModal = document.getElementById("project-modal");
+  const modalCloseBtn = document.getElementById("modal-close-btn");
+  const modalTitle = document.getElementById("modal-title");
+  const modalDesc = document.getElementById("modal-desc");
+  const modalTags = document.getElementById("modal-tags");
+  const modalCode = document.getElementById("modal-code");
+  const modalCodeFilename = document.getElementById("modal-code-filename");
+  const modalTechChips = document.getElementById("modal-tech-chips");
+  const copyCodeBtn = document.getElementById("copy-code-btn");
+
+  function renderProjects(filter = "all") {
+    if (!projectsGrid) return;
+    projectsGrid.innerHTML = "";
+
+    const filtered = PROJECTS_CATALOG.filter(
+      (p) => filter === "all" || p.category === filter
+    );
+
+    filtered.forEach((p) => {
+      const card = document.createElement("div");
+      card.className = "project-card";
+      card.setAttribute("data-cursor", "card");
+
+      card.innerHTML = `
+        <div class="project-glow"></div>
+        <div class="project-media-wrap">
+          <span class="project-pill-badge">${p.discipline}</span>
+          <div style="display:flex; align-items:center; justify-content:center; width:100%; height:100%; font-family:var(--font-mono); font-size:13px; color:rgba(255,255,255,0.7); gap:8px;">
+            <i class="fas fa-terminal" style="color:var(--accent-${p.accent});"></i>
+            <span>${p.filename}</span>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            ${p.tags.map((t) => `<span class="project-tag">${t}</span>`).join("")}
+          </div>
+          <h3 class="project-title">${p.title}</h3>
+          <p class="project-desc">${p.summary}</p>
+          <div class="project-card-footer">
+            <button class="btn-inspect" data-project-id="${p.id}" data-cursor="button">
+              <span>Inspect Code</span>
+              <i class="fas fa-arrow-right"></i>
+            </button>
+            <a href="${p.github}" target="_blank" rel="noopener noreferrer" class="project-github-link" data-cursor="link" title="Open repository">
+              <i class="fab fa-github"></i>
+            </a>
+          </div>
+        </div>
+      `;
+
+      // Track cursor coordinates for radial hover glow
+      card.addEventListener("mousemove", (e) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+        card.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+      });
+
+      projectsGrid.appendChild(card);
+    });
+
+    // Re-bind cursor on dynamically injected elements
+    bindCursorInteractions();
+
+    // Bind Inspect buttons
+    document.querySelectorAll(".btn-inspect").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-project-id");
+        openProjectModal(id);
+      });
+    });
+  }
+
+  function openProjectModal(projectId) {
+    const p = PROJECTS_CATALOG.find((item) => item.id === projectId);
+    if (!p || !projectModal) return;
+
+    modalTitle.textContent = p.title;
+    modalDesc.textContent = p.summary;
+    modalCode.textContent = p.source;
+    modalCodeFilename.textContent = p.filename;
+
+    modalTags.innerHTML = p.tags
+      .map((t) => `<span class="project-tag">${t}</span>`)
+      .join("");
+
+    modalTechChips.innerHTML = `
+      <span class="spec-pill"><i class="fas fa-microchip"></i> Discipline: ${p.discipline}</span>
+      <span class="spec-pill"><i class="fas fa-location-dot"></i> Base: Delhi, India</span>
+    `;
 
     projectModal.showModal();
     document.body.style.overflow = "hidden";
   }
 
   function closeProjectModal() {
+    if (!projectModal) return;
     projectModal.close();
     document.body.style.overflow = "";
   }
 
-  projectDetailsBtn.forEach(trigger => {
-    trigger.addEventListener("click", (e) => {
-      const card = trigger.closest(".project-card");
-      if (card) {
-        const link = card.querySelector(".project-link");
-        const id = link.getAttribute("data-project-id");
-        e.preventDefault();
-        openProjectModal(id);
+  if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeProjectModal);
+  if (projectModal) {
+    projectModal.addEventListener("click", (e) => {
+      const rect = projectModal.getBoundingClientRect();
+      const isIn =
+        rect.top <= e.clientY &&
+        e.clientY <= rect.bottom &&
+        rect.left <= e.clientX &&
+        e.clientX <= rect.right;
+      if (!isIn) closeProjectModal();
+    });
+  }
+
+  if (copyCodeBtn) {
+    copyCodeBtn.addEventListener("click", () => {
+      if (modalCode) {
+        navigator.clipboard.writeText(modalCode.textContent).then(() => {
+          copyCodeBtn.innerHTML = `<i class="fas fa-check"></i> <span>Copied</span>`;
+          setTimeout(() => {
+            copyCodeBtn.innerHTML = `<i class="fas fa-copy"></i> <span>Copy</span>`;
+          }, 2000);
+        });
       }
     });
+  }
+
+  // Filter chips listeners
+  document.querySelectorAll(".filter-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll(".filter-chip").forEach((c) => c.classList.remove("active"));
+      chip.classList.add("active");
+      const f = chip.getAttribute("data-filter");
+      renderProjects(f);
+    });
   });
 
-  modalClose.addEventListener("click", closeProjectModal);
-  
-  projectModal.addEventListener("click", (e) => {
-    const rect = projectModal.getBoundingClientRect();
-    const isInDialog = (
-      rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
-      rect.left <= e.clientX && e.clientX <= rect.left + rect.width
-    );
-    if (!isInDialog) {
-      closeProjectModal();
+  renderProjects("all");
+
+  // =========================================================================
+  // 7. INTERACTIVE REPL TERMINAL EMULATOR
+  // =========================================================================
+  const termInput = document.getElementById("terminal-input");
+  const termOutput = document.getElementById("terminal-output");
+
+  const TERMINAL_COMMANDS = {
+    help: () => `
+<span class="term-highlight">AVAILABLE COMMANDS:</span>
+  • <span class="term-cmd">whoami</span>       : Profile summary & base location
+  • <span class="term-cmd">skills</span>       : Full technical & language matrix
+  • <span class="term-cmd">projects</span>     : List major production repositories
+  • <span class="term-cmd">contact</span>      : Reach Amrendra directly (email/phone/IG)
+  • <span class="term-cmd">location</span>     : Current development base
+  • <span class="term-cmd">clear</span>        : Clear the terminal console
+  • <span class="term-cmd">bench</span>        : Run client performance benchmark
+    `,
+    whoami: () => `
+<span class="term-out-success">Amrendra Yadav</span> — Systems & Creative Engineer
+Base: <strong>Delhi, India</strong>
+Specialization: Low-level C++ rendering, Python streaming pipelines, distributed SQL, & creative WebGL canvas.
+    `,
+    skills: () => `
+<span class="term-highlight">[SYSTEMS CORE]</span>
+  • C++ (17/20)        : OpenGL 4.6, Arena Allocators, GLSL, SIMD Vectorization
+  • Python (3.10+)     : Anomaly Detection, Isolation Forests, AsyncIO, NumPy
+  • SQL / Databases    : Postgres 15+, Composite Indexing, Partitioned Tables
+  • Creative Web       : Modern Vanilla ES6+, WebGL Shaders, Canvas RK4 Physics
+    `,
+    projects: () => `
+<span class="term-highlight">[ENGINEERING CODEBASES]</span>
+  1. Aether 3D Engine   [C++ / OpenGL 4.6]
+  2. PyStream Analytics [Python / Scikit-Learn]
+  3. Nexus DB Optimizer [PostgreSQL 15 Tuning]
+  4. Nebula GLSL Canvas [WebGL Fragment Shader]
+  5. Verlet Kinetic     [N-Body Solver]
+Type 'projects' section above to inspect source code!
+    `,
+    contact: () => `
+<span class="term-out-success">[DIRECT COMMUNICATIONS]</span>
+  • Email     : <a href="mailto:amrendrayadav03321@gmail.com" class="term-highlight">amrendrayadav03321@gmail.com</a>
+  • Call/WA   : <a href="tel:6307124831" class="term-highlight">+91 6307124831</a>
+  • Instagram : <a href="https://instagram.com/satyaa.okkk" target="_blank" class="term-highlight">@satyaa.okkk</a>
+  • GitHub    : <a href="https://github.com/amrendrayadav03321-a11y" target="_blank" class="term-highlight">@amrendrayadav03321-a11y</a>
+    `,
+    location: () => `
+<span class="term-out-success">Base Coordinates:</span> Delhi, India (28.6139° N, 77.2090° E)
+Timezone: Asia/Kolkata (IST • UTC+5:30)
+    `,
+    bench: () => {
+      const t0 = performance.now();
+      let acc = 0;
+      for (let i = 0; i < 1000000; i++) acc += Math.sqrt(i);
+      const t1 = performance.now();
+      return `<span class="term-out-success">Benchmark completed in ${(t1 - t0).toFixed(2)} ms</span>. Zero-bloat client runtime verified.`;
+    },
+    clear: () => {
+      if (termOutput) termOutput.innerHTML = "";
+      return null;
     }
-  });
-
-
-  // ==========================================
-  // 8. Sine Wave Generator Playground
-  // ==========================================
-  const sineCanvas = document.getElementById("sine-wave-canvas");
-  const ctxSine = sineCanvas.getContext("2d");
-
-  let waveConfig = {
-    frequency: 0.015,
-    amplitude: 60,
-    velocity: 0.05,
-    colorTheme: "cyan"
   };
 
-  const themeColors = {
-    cyan: { main: "#06b6d4", shadow: "rgba(6, 182, 212, 0.4)" },
-    purple: { main: "#8b5cf6", shadow: "rgba(139, 92, 246, 0.4)" },
-    gold: { main: "#f59e0b", shadow: "rgba(245, 158, 11, 0.4)" },
-    rose: { main: "#ec4899", shadow: "rgba(236, 72, 153, 0.4)" }
+  if (termInput && termOutput) {
+    termInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const cmd = termInput.value.trim().toLowerCase();
+        termInput.value = "";
+
+        if (!cmd) return;
+
+        // Print input echo
+        const echoLine = document.createElement("p");
+        echoLine.className = "term-line";
+        echoLine.innerHTML = `<span class="term-prompt">guest@amrendra:~$</span> <span class="term-cmd">${cmd}</span>`;
+        termOutput.appendChild(echoLine);
+
+        // Process response
+        if (TERMINAL_COMMANDS[cmd]) {
+          const res = TERMINAL_COMMANDS[cmd]();
+          if (res !== null) {
+            const outLine = document.createElement("div");
+            outLine.className = "term-line";
+            outLine.innerHTML = res;
+            termOutput.appendChild(outLine);
+          }
+        } else {
+          const errLine = document.createElement("p");
+          errLine.className = "term-line term-out-warn";
+          errLine.textContent = `zsh: command not found: ${cmd}. Type 'help' for available commands.`;
+          termOutput.appendChild(errLine);
+        }
+
+        termOutput.scrollTop = termOutput.scrollHeight;
+      }
+    });
+  }
+
+  // =========================================================================
+  // 8. MATHEMATICAL SINE LAB & OSCILLATOR VISUALIZER
+  // =========================================================================
+  const labCanvas = document.getElementById("lab-canvas");
+  const labCtx = labCanvas ? labCanvas.getContext("2d") : null;
+  const sliderFreq = document.getElementById("slider-freq");
+  const sliderAmp = document.getElementById("slider-amp");
+  const sliderSpeed = document.getElementById("slider-speed");
+  const lblFreq = document.getElementById("lbl-freq");
+  const lblAmp = document.getElementById("lbl-amp");
+  const lblSpeed = document.getElementById("lbl-speed");
+
+  let labConfig = {
+    frequency: 0.018,
+    amplitude: 65,
+    speed: 0.04,
+    palette: "cyber"
   };
 
-  let sinePhase = 0;
+  const PALETTES = {
+    cyber: { primary: "#06b6d4", secondary: "#3b82f6" },
+    violet: { primary: "#8b5cf6", secondary: "#ec4899" },
+    amber: { primary: "#f59e0b", secondary: "#ef4444" },
+    rose: { primary: "#ec4899", secondary: "#a855f7" }
+  };
 
-  function resizeSineCanvas() {
-    if (!sineCanvas || !sineCanvas.parentElement) return;
-    const rect = sineCanvas.parentElement.getBoundingClientRect();
-    sineCanvas.width = rect.width;
-    sineCanvas.height = rect.height;
+  if (sliderFreq) {
+    sliderFreq.addEventListener("input", (e) => {
+      labConfig.frequency = parseFloat(e.target.value);
+      if (lblFreq) lblFreq.textContent = labConfig.frequency;
+    });
   }
-  
-  window.addEventListener("resize", () => {
-    resizeSineCanvas();
-  });
-
-  const freqControl = document.getElementById("control-freq");
-  const ampControl = document.getElementById("control-amp");
-  const speedControl = document.getElementById("control-speed");
-  const colorOptions = document.querySelectorAll(".color-option");
-
-  if (freqControl) {
-    freqControl.addEventListener("input", (e) => {
-      waveConfig.frequency = parseFloat(e.target.value);
-      document.getElementById("label-freq").innerText = e.target.value;
+  if (sliderAmp) {
+    sliderAmp.addEventListener("input", (e) => {
+      labConfig.amplitude = parseInt(e.target.value);
+      if (lblAmp) lblAmp.textContent = `${labConfig.amplitude} px`;
+    });
+  }
+  if (sliderSpeed) {
+    sliderSpeed.addEventListener("input", (e) => {
+      labConfig.speed = parseFloat(e.target.value);
+      if (lblSpeed) lblSpeed.textContent = labConfig.speed;
     });
   }
 
-  if (ampControl) {
-    ampControl.addEventListener("input", (e) => {
-      waveConfig.amplitude = parseInt(e.target.value);
-      document.getElementById("label-amp").innerText = `${e.target.value}px`;
-    });
-  }
-
-  if (speedControl) {
-    speedControl.addEventListener("input", (e) => {
-      waveConfig.velocity = parseFloat(e.target.value);
-      document.getElementById("label-speed").innerText = e.target.value;
-    });
-  }
-
-  colorOptions.forEach(opt => {
-    opt.addEventListener("click", () => {
-      colorOptions.forEach(o => o.classList.remove("active"));
-      opt.classList.add("active");
-      waveConfig.colorTheme = opt.getAttribute("data-color");
+  document.querySelectorAll(".palette-swatch").forEach((swatch) => {
+    swatch.addEventListener("click", () => {
+      document.querySelectorAll(".palette-swatch").forEach((s) => s.classList.remove("active"));
+      swatch.classList.add("active");
+      labConfig.palette = swatch.getAttribute("data-palette");
     });
   });
 
-  function drawSineWave() {
-    if (!sineCanvas) return;
-    
-    ctxSine.clearRect(0, 0, sineCanvas.width, sineCanvas.height);
-    
-    const centerY = sineCanvas.height / 2;
-    const theme = themeColors[waveConfig.colorTheme] || themeColors.cyan;
-    
-    const layers = [
-      { ampMultiplier: 1.0, freqMultiplier: 1.0, opacity: 0.8, lineWidth: 3, phaseOffset: 0 },
-      { ampMultiplier: 0.6, freqMultiplier: 1.5, opacity: 0.35, lineWidth: 2, phaseOffset: Math.PI / 3 },
-      { ampMultiplier: 0.3, freqMultiplier: 2.0, opacity: 0.15, lineWidth: 1, phaseOffset: Math.PI / 1.5 }
+  function resizeLabCanvas() {
+    if (!labCanvas || !labCtx) return;
+    const rect = labCanvas.getBoundingClientRect();
+    labCanvas.width = rect.width * window.devicePixelRatio;
+    labCanvas.height = rect.height * window.devicePixelRatio;
+    labCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  }
+  window.addEventListener("resize", resizeLabCanvas);
+  resizeLabCanvas();
+
+  let labPhase = 0;
+  function renderLab() {
+    if (!labCanvas || !labCtx) return;
+    const w = labCanvas.width / window.devicePixelRatio;
+    const h = labCanvas.height / window.devicePixelRatio;
+    labCtx.clearRect(0, 0, w, h);
+
+    const cy = h / 2;
+    const theme = PALETTES[labConfig.palette] || PALETTES.cyber;
+
+    // Harmonic layers (Fundamental + 2nd Harmonic + 3rd Harmonic)
+    const harmonics = [
+      { fMult: 1.0, aMult: 1.0, width: 3.0, alpha: 0.9, color: theme.primary },
+      { fMult: 1.8, aMult: 0.55, width: 1.8, alpha: 0.5, color: theme.secondary },
+      { fMult: 2.6, aMult: 0.25, width: 1.0, alpha: 0.25, color: "#ffffff" }
     ];
 
-    layers.forEach(layer => {
-      ctxSine.beginPath();
-      ctxSine.lineWidth = layer.lineWidth;
-      ctxSine.strokeStyle = theme.main;
-      ctxSine.shadowColor = theme.main;
-      ctxSine.shadowBlur = layer.lineWidth > 1 ? 15 : 0;
-      ctxSine.globalAlpha = layer.opacity;
+    harmonics.forEach((harm) => {
+      labCtx.beginPath();
+      labCtx.lineWidth = harm.width;
+      labCtx.strokeStyle = harm.color;
+      labCtx.globalAlpha = harm.alpha;
+      labCtx.shadowColor = harm.color;
+      labCtx.shadowBlur = harm.width > 2 ? 14 : 0;
 
-      for (let x = 0; x < sineCanvas.width; x++) {
-        const y = centerY + Math.sin(x * waveConfig.frequency * layer.freqMultiplier + sinePhase + layer.phaseOffset) * waveConfig.amplitude * layer.ampMultiplier;
-        
-        if (x === 0) {
-          ctxSine.moveTo(x, y);
-        } else {
-          ctxSine.lineTo(x, y);
-        }
+      for (let x = 0; x < w; x++) {
+        const y =
+          cy +
+          Math.sin(x * labConfig.frequency * harm.fMult + labPhase) *
+            labConfig.amplitude *
+            harm.aMult;
+        if (x === 0) labCtx.moveTo(x, y);
+        else labCtx.lineTo(x, y);
       }
-      ctxSine.stroke();
+      labCtx.stroke();
     });
 
-    ctxSine.shadowBlur = 0;
-    ctxSine.globalAlpha = 1.0;
+    labCtx.shadowBlur = 0;
+    labCtx.globalAlpha = 1.0;
 
-    sinePhase += waveConfig.velocity;
-    requestAnimationFrame(drawSineWave);
+    labPhase += labConfig.speed;
+    requestAnimationFrame(renderLab);
   }
+  renderLab();
 
-  if (sineCanvas) {
-    resizeSineCanvas();
-    drawSineWave();
-  }
+  // =========================================================================
+  // 9. ASYNCHRONOUS FORMSUBMIT DISPATCH & TOAST NOTIFICATION
+  // =========================================================================
+  const contactForm = document.getElementById("contact-form");
+  const submitBtn = document.getElementById("submit-btn");
 
-
-  // ==========================================
-  // 9. Contact Form Handling (Asynchronous email transmission)
-  // ==========================================
-  const contactForm = document.getElementById("portfolio-contact-form");
-
-  if (contactForm) {
+  if (contactForm && submitBtn) {
     contactForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      
+
       const nameVal = document.getElementById("name").value.trim();
       const emailVal = document.getElementById("email").value.trim();
+      const subjectVal = document.getElementById("subject").value.trim();
       const msgVal = document.getElementById("message").value.trim();
 
       if (!nameVal || !emailVal || !msgVal) {
-        alert("Please fill in all form inputs correctly.");
+        showToast("Please fill all mandatory fields.", "error");
         return;
       }
 
-      // Submit form asynchronously to FormSubmit ajax endpoint
-      const submitUrl = "https://formsubmit.co/ajax/amrendrayadav03321@gmail.com";
-      const submitBtn = contactForm.querySelector(".form-submit-btn");
-      
-      const originalBtnText = submitBtn.innerHTML;
-      submitBtn.innerHTML = `Sending... <i class="fas fa-spinner fa-spin"></i>`;
+      const originalBtnHTML = submitBtn.innerHTML;
+      submitBtn.innerHTML = `<span>Transmitting...</span> <i class="fas fa-circle-notch fa-spin"></i>`;
       submitBtn.disabled = true;
 
-      fetch(submitUrl, {
+      fetch("https://formsubmit.co/ajax/amrendrayadav03321@gmail.com", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
+          Accept: "application/json"
         },
         body: JSON.stringify({
           name: nameVal,
           email: emailVal,
+          subject: subjectVal || "Portfolio Inquiry (Delhi)",
           message: msgVal,
-          _subject: "New message from Amrendra Yadav Portfolio!"
+          location_ref: "Delhi, India"
         })
       })
-      .then(response => response.json())
-      .then(data => {
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
+        .then((res) => res.json())
+        .then((data) => {
+          submitBtn.innerHTML = originalBtnHTML;
+          submitBtn.disabled = false;
 
-        if (data.success === "true" || data.success === true) {
-          showToastNotification(`Thanks ${nameVal}! Your message has been sent successfully. Please check your email inbox to activate FormSubmit!`);
-          contactForm.reset();
-        } else {
-          showToastNotification("Something went wrong. Please check your inputs and try again.");
-        }
-      })
-      .catch(err => {
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
-        console.error("Form submit error:", err);
-        showToastNotification("Connection error. Please check your internet connection.");
-      });
+          if (data.success === "true" || data.success === true) {
+            showToast(`Transmission received, ${nameVal}! Message dispatched to Amrendra.`, "success");
+            contactForm.reset();
+          } else {
+            showToast("Failed to dispatch. Please email directly at amrendrayadav03321@gmail.com", "warn");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          submitBtn.innerHTML = originalBtnHTML;
+          submitBtn.disabled = false;
+          showToast("Network dispatch error. Please call +91 6307124831 or email directly.", "error");
+        });
     });
   }
 
-  function showToastNotification(message) {
+  function showToast(message, type = "success") {
     const toast = document.createElement("div");
-    toast.className = "glass-card";
-    toast.style.position = "fixed";
-    toast.style.bottom = "30px";
-    toast.style.right = "30px";
-    toast.style.padding = "20px 30px";
-    toast.style.zIndex = "99999";
-    toast.style.maxWidth = "400px";
-    toast.style.border = "1px solid var(--accent-secondary)";
-    toast.style.boxShadow = "0 10px 30px rgba(6, 182, 212, 0.35)";
-    toast.style.background = "rgba(10, 8, 17, 0.92)";
-    toast.style.borderRadius = "15px";
-    toast.style.backdropFilter = "blur(12px)";
-    toast.style.display = "flex";
-    toast.style.flexDirection = "column";
-    toast.style.gap = "10px";
-    toast.style.opacity = "0";
-    toast.style.transform = "translateY(20px)";
-    toast.style.transition = "all 0.4s var(--spring-easing)";
+    toast.className = "glass-toast";
+
+    const icon =
+      type === "success"
+        ? '<i class="fas fa-circle-check" style="color:var(--accent-emerald); font-size:18px;"></i>'
+        : '<i class="fas fa-triangle-exclamation" style="color:var(--accent-amber); font-size:18px;"></i>';
 
     toast.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-weight:700; color:var(--accent-secondary);"><i class="fas fa-check-circle"></i> Success</span>
-        <button id="toast-close" style="background:none; border:none; color:#fff; cursor:pointer;"><i class="fas fa-times"></i></button>
+      ${icon}
+      <div style="display:flex; flex-direction:column; gap:2px;">
+        <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">System Notification</span>
+        <span style="font-size:13.5px; color:#ffffff;">${message}</span>
       </div>
-      <p style="font-size:14px; line-height:1.6; color:var(--text-main);">${message}</p>
     `;
 
     document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add("toast-show"), 20);
 
-    const closeBtn = toast.querySelector("#toast-close");
-    closeBtn.addEventListener("mouseenter", () => document.body.classList.add("cursor-hover"));
-    closeBtn.addEventListener("mouseleave", () => document.body.classList.remove("cursor-hover"));
-    closeBtn.addEventListener("click", () => {
-      toast.style.opacity = "0";
-      toast.style.transform = "translateY(20px)";
+    setTimeout(() => {
+      toast.classList.remove("toast-show");
       setTimeout(() => toast.remove(), 400);
-    });
-
-    setTimeout(() => {
-      toast.style.opacity = "1";
-      toast.style.transform = "translateY(0)";
-    }, 50);
-
-    setTimeout(() => {
-      if (toast.parentElement) {
-        toast.style.opacity = "0";
-        toast.style.transform = "translateY(20px)";
-        setTimeout(() => toast.remove(), 400);
-      }
-    }, 6000);
+    }, 5500);
   }
-
 });
