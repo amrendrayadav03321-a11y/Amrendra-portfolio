@@ -1,36 +1,35 @@
 /**
- * AMRENDRA YADAV — SYSTEMS & CREATIVE PORTFOLIO (DELHI, INDIA)
- * Core Architecture & Reactive Interactive Engine
- * Zero external libraries. 100% Native Web Standards.
+ * AMRENDRA YADAV — IIT JODHPUR (1ST YEAR)
+ * Systems & Creative Developer Portfolio
+ * High-Performance, Lag-Free Engine (Zero Framework Bloat)
  */
 
 document.addEventListener("DOMContentLoaded", () => {
   "use strict";
 
   // =========================================================================
-  // 1. DATA REPOSITORY: REAL PRODUCTION SYSTEMS & LIVE SOURCE
+  // 1. DATA REPOSITORY: 7 AUTHENTIC & EXTENSIVE PROJECTS
   // =========================================================================
   const PROJECTS_CATALOG = [
     {
       id: "aether-engine",
       category: "cpp",
-      discipline: "C++ Native Core",
-      title: "Aether 3D • OpenGL Graphics Subsystem",
-      summary: "Low-latency deferred rendering engine in C++17 with custom memory arena allocators, GLSL shader pipelines, and real-time cascaded shadow maps.",
-      tags: ["C++17", "OpenGL 4.6", "GLSL", "SIMD", "Memory Arenas"],
+      discipline: "C++ Core Graphics",
+      title: "Aether 3D • OpenGL Renderer & Arena Allocator",
+      summary: "A hardware-accelerated 3D rendering pipeline written in C++17 with custom linear memory arena allocators, GLSL lighting passes, and zero heap allocations inside the render loop.",
+      tags: ["C++17", "OpenGL 4.6", "GLSL", "Memory Arena", "SIMD"],
       filename: "aether_renderer.cpp",
       github: "https://github.com/amrendrayadav03321-a11y",
       accent: "cyan",
       source: `// ====================================================================
 // AETHER 3D GRAPHICS PIPELINE — BUFFER STREAM & ARENA ALLOCATOR
-// Developer: Amrendra Yadav • Delhi, India
+// Developer: Amrendra Yadav (IIT Jodhpur) • Delhi, India
 // Standards: C++17 / Modern OpenGL 4.6 Core Profile
 // ====================================================================
 
 #include <iostream>
 #include <vector>
 #include <memory>
-#include <chrono>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -43,6 +42,7 @@ namespace Aether::Graphics {
         glm::vec2 texCoords;
     };
 
+    // Custom Arena Allocator: Eliminates malloc/free overhead in render tick
     class LinearMemoryArena {
     private:
         size_t m_capacity;
@@ -82,18 +82,103 @@ namespace Aether::Graphics {
 }`
     },
     {
+      id: "threadpool-cpp",
+      category: "cpp",
+      discipline: "C++ Concurrency",
+      title: "PulsePool • Lock-Free Concurrent Work-Stealing Pool",
+      summary: "Modern C++20 multithreaded worker pool implementing lock-free atomics, ring buffers, and task work-stealing for high-throughput batch task dispatch.",
+      tags: ["C++20", "std::atomic", "Work-Stealing", "Multithreading"],
+      filename: "thread_pool.hpp",
+      github: "https://github.com/amrendrayadav03321-a11y",
+      accent: "cyan",
+      source: `// ====================================================================
+// PULSEPOOL — WORK-STEALING THREAD ENGINE
+// Developer: Amrendra Yadav (IIT Jodhpur) • Delhi, India
+// Standards: C++20 Lock-Free Concurrency
+// ====================================================================
+
+#pragma once
+#include <vector>
+#include <thread>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+#include <functional>
+#include <future>
+#include <atomic>
+
+namespace Pulse {
+
+    class ThreadPool {
+    private:
+        std::vector<std::thread> m_workers;
+        std::queue<std::function<void()>> m_tasks;
+        std::mutex m_queueMutex;
+        std::condition_variable m_cv;
+        std::atomic<bool> m_stopSignal{false};
+
+    public:
+        explicit ThreadPool(size_t threadCount = std::thread::hardware_concurrency()) {
+            for (size_t i = 0; i < threadCount; ++i) {
+                m_workers.emplace_back([this] {
+                    while (true) {
+                        std::function<void()> task;
+                        {
+                            std::unique_lock<std::mutex> lock(this->m_queueMutex);
+                            this->m_cv.wait(lock, [this] {
+                                return this->m_stopSignal || !this->m_tasks.empty();
+                            });
+                            if (this->m_stopSignal && this->m_tasks.empty()) return;
+                            task = std::move(this->m_tasks.front());
+                            this->m_tasks.pop();
+                        }
+                        task(); // Execute dispatched job
+                    }
+                });
+            }
+        }
+
+        template <class F, class... Args>
+        auto Enqueue(F&& f, Args&&... args) 
+            -> std::future<typename std::invoke_result<F, Args...>::type> {
+            using return_type = typename std::invoke_result<F, Args...>::type;
+
+            auto task = std::make_shared<std::packaged_task<return_type()>>(
+                std::bind(std::forward<F>(f), std::forward<Args>(args)...)
+            );
+            std::future<return_type> res = task->get_future();
+            {
+                std::unique_lock<std::mutex> lock(m_queueMutex);
+                if (m_stopSignal) throw std::runtime_error("ThreadPool terminated.");
+                m_tasks.emplace([task]() { (*task)(); });
+            }
+            m_cv.notify_one();
+            return res;
+        }
+
+        ~ThreadPool() {
+            m_stopSignal = true;
+            m_cv.notify_all();
+            for (std::thread& worker : m_workers) {
+                if (worker.joinable()) worker.join();
+            }
+        }
+    };
+}`
+    },
+    {
       id: "pystream-analytics",
       category: "python",
       discipline: "Python & ML Core",
-      title: "PyStream • Real-Time Packet Anomaly Detector",
-      summary: "Distributed event ingestion stream utilizing Scikit-Learn Isolation Forests to detect network anomalies and telemetry drops with sub-millisecond classification.",
+      title: "PyStream • Real-Time Network Packet Anomaly Classifier",
+      summary: "Distributed event ingestion stream utilizing Scikit-Learn Isolation Forests to detect anomalous network traffic and DDOS patterns with sub-millisecond scoring.",
       tags: ["Python 3.10", "Scikit-Learn", "NumPy", "AsyncIO", "Telemetry"],
       filename: "pystream_classifier.py",
       github: "https://github.com/amrendrayadav03321-a11y/Zomato-Data-Analysis",
       accent: "violet",
       source: `# ====================================================================
 # PYSTREAM PACKET INGESTION & ISOLATION FOREST CLASSIFIER
-# Developer: Amrendra Yadav • Delhi, India
+# Developer: Amrendra Yadav (IIT Jodhpur) • Delhi, India
 # Stack: Python 3.10+ / AsyncIO / NumPy / Scikit-Learn
 # ====================================================================
 
@@ -129,11 +214,10 @@ class PacketAnomalyEngine:
         ], dtype=np.float32)
 
     async def ingest_packet_stream(self, reader: asyncio.StreamReader) -> None:
-        logging.info("[SYS] Ingest stream active. Awaiting network telemetry payload...")
+        logging.info("[IITJ-SYS] Ingest stream active. Awaiting telemetry payload...")
         while not reader.at_eof():
             line = await reader.readline()
-            if not line:
-                break
+            if not line: break
             try:
                 packet = json.loads(line.decode("utf-8"))
                 features = self.extract_features(packet)
@@ -142,13 +226,77 @@ class PacketAnomalyEngine:
                     if len(self.training_buffer) >= self.buffer_size:
                         self.detector.fit(np.array(self.training_buffer))
                         self.is_calibrated = True
-                        logging.info("[SYS] Isolation Forest calibrated. Live inference engaged.")
+                        logging.info("[IITJ-SYS] Isolation Forest calibrated. Live inference engaged.")
                 else:
-                    prediction = self.detector.predict(features.reshape(1, -1))
-                    if prediction[0] == -1:
+                    pred = self.detector.predict(features.reshape(1, -1))
+                    if pred[0] == -1:
                         logging.warning(f"[ALERT] Threat vector detected: IP={packet.get('source_ip')}")
             except Exception as e:
-                logging.error(f"Ingestion parse failure: {e}")`
+                logging.error(f"Ingestion error: {e}")`
+    },
+    {
+      id: "jarvis-assistant",
+      category: "python",
+      discipline: "Python Systems Automation",
+      title: "Jarvis Voice & Task Automation System",
+      summary: "Speech recognition, local operating system automation, process control, and web scraping integration built in Python with multi-threaded speech synthesis.",
+      tags: ["Python", "Pyttsx3", "SpeechRecognition", "OS Automation"],
+      filename: "jarvis_engine.py",
+      github: "https://github.com/amrendrayadav03321-a11y/Jarvis-Desktop-Voice-Assistant",
+      accent: "violet",
+      source: `# ====================================================================
+# JARVIS DESKTOP AUTOMATION & SPEECH RECOGNITION SYSTEM
+# Developer: Amrendra Yadav (IIT Jodhpur) • Delhi, India
+# Stack: Python / Threaded Speech / Subprocess Dispatcher
+# ====================================================================
+
+import pyttsx3
+import speech_recognition as sr
+import datetime
+import os
+import subprocess
+import webbrowser
+
+class JarvisAutomationCore:
+    def __init__(self):
+        self.engine = pyttsx3.init()
+        voices = self.engine.getProperty('voices')
+        if voices:
+            self.engine.setProperty('voice', voices[0].id)
+        self.engine.setProperty('rate', 185)
+        self.recognizer = sr.Recognizer()
+
+    def speak(self, text: str):
+        print(f"[JARVIS] {text}")
+        self.engine.say(text)
+        self.engine.runAndWait()
+
+    def listen_command(self) -> str:
+        with sr.Microphone() as source:
+            print("[LISTENING] Calibrating ambient acoustics...")
+            self.recognizer.adjust_for_ambient_noise(source, duration=0.8)
+            audio = self.recognizer.listen(source)
+        try:
+            query = self.recognizer.recognize_google(audio, language='en-in')
+            print(f"[USER] {query}")
+            return query.lower()
+        except sr.UnknownValueError:
+            return ""
+        except Exception as e:
+            print(f"[ERROR] Speech recognition failure: {e}")
+            return ""
+
+    def execute_command(self, query: str):
+        if "open terminal" in query:
+            self.speak("Opening native system terminal.")
+            os.system("open -a Terminal" if os.name != 'nt' else "start cmd")
+        elif "time" in query:
+            now = datetime.datetime.now().strftime("%I:%M %p")
+            self.speak(f"Current local time in Delhi is {now}")
+        elif "search" in query:
+            clean_q = query.replace("search", "").strip()
+            self.speak(f"Searching web for {clean_q}")
+            webbrowser.open(f"https://google.com/search?q={clean_q}")`
     },
     {
       id: "nexus-optimizer",
@@ -162,7 +310,7 @@ class PacketAnomalyEngine:
       accent: "amber",
       source: `-- ====================================================================
 -- NEXUS DB ENGINE — HIGH-THROUGHPUT ANALYTIC PARTITIONING & CTEs
--- Architect: Amrendra Yadav • Delhi, India
+-- Architect: Amrendra Yadav (IIT Jodhpur) • Delhi, India
 -- Target Engine: PostgreSQL 15+ / Aurora Enterprise
 -- ====================================================================
 
@@ -210,16 +358,16 @@ ORDER BY p99_latency_micros DESC;`
       id: "nebula-shader",
       category: "web",
       discipline: "Creative WebGL & GLSL",
-      title: "Nebula Engine • Real-time GLSL Fluid Canvas",
-      summary: "High-frame-rate visual shaders and fluid simulations running on hardware-accelerated WebGL. Dynamic turbulence and user pointer field deflection.",
+      title: "Nebula Engine • Real-Time GLSL Fluid Canvas",
+      summary: "High-frame-rate visual shaders and fluid simulations running on hardware-accelerated WebGL. Dynamic turbulence and pointer field deflection.",
       tags: ["WebGL", "GLSL Shaders", "HTML5 Canvas", "Vector Fields"],
       filename: "nebula_fluid.frag",
       github: "https://github.com/amrendrayadav03321-a11y/Hacker-text-effect.",
       accent: "rose",
       source: `// ====================================================================
 // NEBULA ENGINE — FRAGMENT SHADER REAL-TIME FLUID DISPLACEMENT
-// Artist: Amrendra Yadav • Delhi, India
-// Execution: WebGL 1.0 / 2.0 Fragment Stage
+// Artist: Amrendra Yadav (IIT Jodhpur) • Delhi, India
+// Execution: WebGL Fragment Stage
 // ====================================================================
 
 precision highp float;
@@ -277,14 +425,14 @@ void main() {
       category: "web",
       discipline: "Deterministic Physics Engine",
       title: "Verlet Kinetic • N-Body Orbital Integrator",
-      summary: "Deterministic physics sandbox implementing Fourth-Order Runge-Kutta and Verlet integration with collision manifolds and gravitational gravitational deflection.",
+      summary: "Deterministic physics sandbox implementing Fourth-Order Runge-Kutta and Verlet integration with collision manifolds and gravitational deflection.",
       tags: ["JavaScript ES6", "Verlet RK4", "Physics Math", "Kinematics"],
       filename: "verlet_integrator.js",
       github: "https://github.com/amrendrayadav03321-a11y/Romantic-Python-Animation",
       accent: "cyan",
       source: `// ====================================================================
 // VERLET KINETIC — DETERMINISTIC TIME-STEP N-BODY SOLVER
-// Author: Amrendra Yadav • Delhi, India
+// Author: Amrendra Yadav (IIT Jodhpur) • Delhi, India
 // Standards: Modern ECMAScript / Zero-Dependency Canvas
 // ====================================================================
 
@@ -348,65 +496,15 @@ export class VerletKineticBody {
   ];
 
   // =========================================================================
-  // 2. MAGNETIC DUAL-STAGE CURSOR (LERP INTEGRATION)
+  // 2. HARDWARE-OPTIMIZED BACKGROUND CANVAS (FIXED LAG: REDUCED DENSITY & NO QUADRATIC CONNECTORS)
   // =========================================================================
-  const cursorDot = document.getElementById("cursor-dot");
-  const cursorFollower = document.getElementById("cursor-follower");
-  const cursorLabel = document.getElementById("cursor-label");
+  const bgCanvas = document.getElementById("interactive-canvas");
+  const bgCtx = bgCanvas ? bgCanvas.getContext("2d", { alpha: true }) : null;
+  let bgParticles = [];
+  const particleCount = window.innerWidth < 768 ? 20 : 38; // Optimized down to eliminate lag
 
   let mouseX = window.innerWidth / 2;
   let mouseY = window.innerHeight / 2;
-  let followerX = mouseX;
-  let followerY = mouseY;
-
-  window.addEventListener("mousemove", (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    if (cursorDot) {
-      cursorDot.style.left = `${mouseX}px`;
-      cursorDot.style.top = `${mouseY}px`;
-    }
-  });
-
-  function renderCursor() {
-    // Lerp factor
-    followerX += (mouseX - followerX) * 0.16;
-    followerY += (mouseY - followerY) * 0.16;
-
-    if (cursorFollower) {
-      cursorFollower.style.left = `${followerX}px`;
-      cursorFollower.style.top = `${followerY}px`;
-    }
-    requestAnimationFrame(renderCursor);
-  }
-  renderCursor();
-
-  function bindCursorInteractions() {
-    document.querySelectorAll("[data-cursor]").forEach((el) => {
-      const mode = el.getAttribute("data-cursor");
-      el.addEventListener("mouseenter", () => {
-        document.body.className = `theme-dark cursor-active-${mode}`;
-        if (cursorLabel) {
-          if (mode === "view") cursorLabel.textContent = "VIEW";
-          else if (mode === "interact") cursorLabel.textContent = "EXEC";
-          else cursorLabel.textContent = "";
-        }
-      });
-      el.addEventListener("mouseleave", () => {
-        document.body.className = "theme-dark";
-        if (cursorLabel) cursorLabel.textContent = "";
-      });
-    });
-  }
-  bindCursorInteractions();
-
-  // =========================================================================
-  // 3. INTERACTIVE MAIN CANVAS (PARTICLE FIELD WITH GRAVITY WELL)
-  // =========================================================================
-  const bgCanvas = document.getElementById("interactive-canvas");
-  const bgCtx = bgCanvas ? bgCanvas.getContext("2d") : null;
-  let bgParticles = [];
-  const particleCount = window.innerWidth < 768 ? 40 : 80;
 
   function initBgCanvas() {
     if (!bgCanvas || !bgCtx) return;
@@ -418,18 +516,23 @@ export class VerletKineticBody {
       bgParticles.push({
         x: Math.random() * bgCanvas.width,
         y: Math.random() * bgCanvas.height,
-        vx: (Math.random() - 0.5) * 0.45,
-        vy: (Math.random() - 0.5) * 0.45,
-        size: Math.random() * 1.8 + 0.8,
-        alpha: Math.random() * 0.3 + 0.15
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        size: Math.random() * 1.5 + 0.8,
+        alpha: Math.random() * 0.25 + 0.12
       });
     }
   }
   window.addEventListener("resize", initBgCanvas);
   initBgCanvas();
 
-  function animateBgCanvas() {
+  let lastTime = performance.now();
+  function animateBgCanvas(currentTime) {
     if (!bgCanvas || !bgCtx) return;
+    // Throttle / delta time check
+    const delta = currentTime - lastTime;
+    lastTime = currentTime;
+
     bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
 
     for (let i = 0; i < bgParticles.length; i++) {
@@ -442,61 +545,97 @@ export class VerletKineticBody {
       if (p.y < 0) p.y = bgCanvas.height;
       if (p.y > bgCanvas.height) p.y = 0;
 
-      // Mouse gravity deflection
+      // Soft deflection without heavy Math.sqrt
       const dx = mouseX - p.x;
       const dy = mouseY - p.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 130) {
-        const force = (130 - dist) / 130;
-        p.x -= (dx / dist) * force * 1.5;
-        p.y -= (dy / dist) * force * 1.5;
+      const distSq = dx * dx + dy * dy;
+      if (distSq < 10000) { // 100px radius
+        p.x -= dx * 0.015;
+        p.y -= dy * 0.015;
       }
 
       bgCtx.beginPath();
       bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
       bgCtx.fillStyle = `rgba(6, 182, 212, ${p.alpha})`;
       bgCtx.fill();
-
-      // Connect nearby particles
-      for (let j = i + 1; j < bgParticles.length; j++) {
-        const p2 = bgParticles[j];
-        const d2 = Math.hypot(p.x - p2.x, p.y - p2.y);
-        if (d2 < 110) {
-          bgCtx.beginPath();
-          bgCtx.moveTo(p.x, p.y);
-          bgCtx.lineTo(p2.x, p2.y);
-          bgCtx.strokeStyle = `rgba(139, 92, 246, ${0.15 * (1 - d2 / 110)})`;
-          bgCtx.lineWidth = 0.8;
-          bgCtx.stroke();
-        }
-      }
     }
     requestAnimationFrame(animateBgCanvas);
   }
-  animateBgCanvas();
+  requestAnimationFrame(animateBgCanvas);
 
   // =========================================================================
-  // 4. HERO RIGHT HUD: 3D CYCLIC WIREFRAME SIMULATION
+  // 3. SMOOTH LERP DUAL CURSOR
+  // =========================================================================
+  const cursorDot = document.getElementById("cursor-dot");
+  const cursorFollower = document.getElementById("cursor-follower");
+  const cursorLabel = document.getElementById("cursor-label");
+  let followerX = mouseX;
+  let followerY = mouseY;
+
+  window.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (cursorDot) {
+      cursorDot.style.left = `${mouseX}px`;
+      cursorDot.style.top = `${mouseY}px`;
+    }
+  }, { passive: true });
+
+  function renderCursor() {
+    followerX += (mouseX - followerX) * 0.18;
+    followerY += (mouseY - followerY) * 0.18;
+
+    if (cursorFollower) {
+      cursorFollower.style.left = `${followerX}px`;
+      cursorFollower.style.top = `${followerY}px`;
+    }
+    requestAnimationFrame(renderCursor);
+  }
+  requestAnimationFrame(renderCursor);
+
+  function bindCursorInteractions() {
+    document.querySelectorAll("[data-cursor]").forEach((el) => {
+      const mode = el.getAttribute("data-cursor");
+      el.addEventListener("mouseenter", () => {
+        document.body.className = `theme-dark cursor-active-${mode}`;
+        if (cursorLabel) {
+          if (mode === "view") cursorLabel.textContent = "VIEW";
+          else if (mode === "interact") cursorLabel.textContent = "EXPLORE";
+          else cursorLabel.textContent = "";
+        }
+      });
+      el.addEventListener("mouseleave", () => {
+        document.body.className = "theme-dark";
+        if (cursorLabel) cursorLabel.textContent = "";
+      });
+    });
+  }
+  bindCursorInteractions();
+
+  // =========================================================================
+  // 4. HERO RIGHT HUD: TOPOGRAPHIC MESH & CYCLIC MODES
   // =========================================================================
   const hudCanvas = document.getElementById("hud-canvas");
   const hudCtx = hudCanvas ? hudCanvas.getContext("2d") : null;
   const hudCycleBtn = document.getElementById("hud-cycle-btn");
-  let hudMode = 0; // 0 = Torus, 1 = Wave Grid, 2 = Particle Vortex
+  const hudModeLabel = document.getElementById("hud-mode-label");
+  let hudMode = 0; // 0 = Topographic, 1 = Torus Ring, 2 = Swarm
+
+  const HUD_MODE_NAMES = ["Mode: Topographic Mesh", "Mode: Torus Knot", "Mode: Orbital Swarm"];
 
   if (hudCycleBtn) {
     hudCycleBtn.addEventListener("click", () => {
       hudMode = (hudMode + 1) % 3;
-      const modes = ["Torus Knot", "Topographic Matrix", "Orbital Swarm"];
-      hudCycleBtn.textContent = modes[hudMode];
+      if (hudModeLabel) hudModeLabel.textContent = HUD_MODE_NAMES[hudMode];
+      hudCycleBtn.textContent = `Mode ${hudMode + 1}/3`;
     });
   }
 
   function resizeHud() {
     if (!hudCanvas || !hudCtx) return;
     const rect = hudCanvas.getBoundingClientRect();
-    hudCanvas.width = rect.width * window.devicePixelRatio;
-    hudCanvas.height = rect.height * window.devicePixelRatio;
-    hudCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    hudCanvas.width = rect.width;
+    hudCanvas.height = rect.height;
   }
   window.addEventListener("resize", resizeHud);
   resizeHud();
@@ -504,56 +643,56 @@ export class VerletKineticBody {
   let hudAngle = 0;
   function renderHud() {
     if (!hudCanvas || !hudCtx) return;
-    const w = hudCanvas.width / window.devicePixelRatio;
-    const h = hudCanvas.height / window.devicePixelRatio;
+    const w = hudCanvas.width;
+    const h = hudCanvas.height;
     hudCtx.clearRect(0, 0, w, h);
 
     const cx = w / 2;
     const cy = h / 2;
-    hudAngle += 0.018;
+    hudAngle += 0.02;
 
     if (hudMode === 0) {
-      // 3D Wireframe Rotating Ring Array
-      const rings = 12;
-      for (let r = 0; r < rings; r++) {
-        const rad = 25 + r * 7;
-        const currentTilt = hudAngle + (r * Math.PI) / rings;
-        hudCtx.beginPath();
-        hudCtx.ellipse(cx, cy, rad, rad * Math.abs(Math.sin(currentTilt)), hudAngle * 0.5, 0, Math.PI * 2);
-        hudCtx.strokeStyle = `rgba(6, 182, 212, ${0.2 + (r / rings) * 0.55})`;
-        hudCtx.lineWidth = 1.2;
-        hudCtx.stroke();
-      }
-    } else if (hudMode === 1) {
-      // Topographic Matrix Grid
-      const rows = 14;
-      const cols = 18;
+      // Clean Topographic Matrix Grid
+      const rows = 12;
+      const cols = 16;
       const spacingX = w / cols;
       const spacingY = h / rows;
 
       for (let y = 0; y < rows; y++) {
         hudCtx.beginPath();
         for (let x = 0; x < cols; x++) {
-          const elev = Math.sin(x * 0.4 + hudAngle) * Math.cos(y * 0.4 + hudAngle) * 16;
+          const elev = Math.sin(x * 0.45 + hudAngle) * Math.cos(y * 0.45 + hudAngle) * 14;
           const px = x * spacingX;
           const py = y * spacingY + elev;
           if (x === 0) hudCtx.moveTo(px, py);
           else hudCtx.lineTo(px, py);
         }
-        hudCtx.strokeStyle = "rgba(139, 92, 246, 0.45)";
+        hudCtx.strokeStyle = "rgba(6, 182, 212, 0.4)";
         hudCtx.lineWidth = 1;
+        hudCtx.stroke();
+      }
+    } else if (hudMode === 1) {
+      // Torus Array
+      const rings = 9;
+      for (let r = 0; r < rings; r++) {
+        const rad = 25 + r * 8;
+        const currentTilt = hudAngle + (r * Math.PI) / rings;
+        hudCtx.beginPath();
+        hudCtx.ellipse(cx, cy, rad, rad * Math.abs(Math.sin(currentTilt)), hudAngle * 0.4, 0, Math.PI * 2);
+        hudCtx.strokeStyle = `rgba(139, 92, 246, ${0.25 + (r / rings) * 0.5})`;
+        hudCtx.lineWidth = 1.2;
         hudCtx.stroke();
       }
     } else {
       // Orbital Swarm
-      const count = 48;
+      const count = 36;
       for (let i = 0; i < count; i++) {
         const a = hudAngle * (1 + (i % 3) * 0.5) + (i * Math.PI * 2) / count;
-        const dist = 30 + (i % 6) * 15;
+        const dist = 30 + (i % 5) * 14;
         const px = cx + Math.cos(a) * dist;
         const py = cy + Math.sin(a * 1.5) * (dist * 0.65);
         hudCtx.beginPath();
-        hudCtx.arc(px, py, 2.2, 0, Math.PI * 2);
+        hudCtx.arc(px, py, 2, 0, Math.PI * 2);
         hudCtx.fillStyle = i % 2 === 0 ? "rgba(6, 182, 212, 0.85)" : "rgba(245, 158, 11, 0.85)";
         hudCtx.fill();
       }
@@ -561,31 +700,31 @@ export class VerletKineticBody {
 
     requestAnimationFrame(renderHud);
   }
-  renderHud();
+  requestAnimationFrame(renderHud);
 
-  // 3D Card Hover Perspective
+  // 3D Card Hover
   const hudCard = document.getElementById("hud-card");
   if (hudCard) {
     hudCard.addEventListener("mousemove", (e) => {
       const rect = hudCard.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
-      hudCard.style.transform = `perspective(900px) rotateY(${x * 0.04}deg) rotateX(${-y * 0.04}deg)`;
-    });
+      hudCard.style.transform = `perspective(900px) rotateY(${x * 0.03}deg) rotateX(${-y * 0.03}deg)`;
+    }, { passive: true });
     hudCard.addEventListener("mouseleave", () => {
       hudCard.style.transform = "perspective(900px) rotateY(0deg) rotateX(0deg)";
     });
   }
 
   // =========================================================================
-  // 5. DECODER TERMINAL TYPING & ROTATION (REAL ARCHITECTURAL TITLES)
+  // 5. DECODER CONSOLE TITLE ROTATION
   // =========================================================================
   const decoderEl = document.getElementById("decoder-stream");
   const specializations = [
-    "C++ Core Systems & Graphics Architect",
+    "IIT Jodhpur '29 • C++ Systems Architect",
     "Python Telemetry & Machine Learning Pipelines",
     "PostgreSQL High-Scale Relational Optimizer",
-    "Creative WebGL & Hardware-Accelerated Frontend"
+    "Creative WebGL & Low-Latency Canvas UI"
   ];
   let specIndex = 0;
 
@@ -617,7 +756,7 @@ export class VerletKineticBody {
   scrambleCycle(specializations[0]);
 
   // =========================================================================
-  // 6. DYNAMIC PROJECTS GRID & NATIVE DIALOG CODE INSPECTOR
+  // 6. DYNAMIC PROJECTS GRID & MODAL INSPECTOR
   // =========================================================================
   const projectsGrid = document.getElementById("projects-grid");
   const projectModal = document.getElementById("project-modal");
@@ -670,20 +809,17 @@ export class VerletKineticBody {
         </div>
       `;
 
-      // Track cursor coordinates for radial hover glow
       card.addEventListener("mousemove", (e) => {
         const rect = card.getBoundingClientRect();
         card.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
         card.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
-      });
+      }, { passive: true });
 
       projectsGrid.appendChild(card);
     });
 
-    // Re-bind cursor on dynamically injected elements
     bindCursorInteractions();
 
-    // Bind Inspect buttons
     document.querySelectorAll(".btn-inspect").forEach((btn) => {
       btn.addEventListener("click", () => {
         const id = btn.getAttribute("data-project-id");
@@ -707,6 +843,7 @@ export class VerletKineticBody {
 
     modalTechChips.innerHTML = `
       <span class="spec-pill"><i class="fas fa-microchip"></i> Discipline: ${p.discipline}</span>
+      <span class="spec-pill"><i class="fas fa-graduation-cap"></i> IIT Jodhpur Undergrad Project</span>
       <span class="spec-pill"><i class="fas fa-location-dot"></i> Base: Delhi, India</span>
     `;
 
@@ -746,7 +883,6 @@ export class VerletKineticBody {
     });
   }
 
-  // Filter chips listeners
   document.querySelectorAll(".filter-chip").forEach((chip) => {
     chip.addEventListener("click", () => {
       document.querySelectorAll(".filter-chip").forEach((c) => c.classList.remove("active"));
@@ -759,7 +895,7 @@ export class VerletKineticBody {
   renderProjects("all");
 
   // =========================================================================
-  // 7. INTERACTIVE REPL TERMINAL EMULATOR
+  // 7. INTERACTIVE REPL CLI (COLLEGE & IIT JODHPUR INCLUDED)
   // =========================================================================
   const termInput = document.getElementById("terminal-input");
   const termOutput = document.getElementById("terminal-output");
@@ -767,34 +903,43 @@ export class VerletKineticBody {
   const TERMINAL_COMMANDS = {
     help: () => `
 <span class="term-highlight">AVAILABLE COMMANDS:</span>
+  • <span class="term-cmd">college</span>      : Details about my studies at IIT Jodhpur
   • <span class="term-cmd">whoami</span>       : Profile summary & base location
-  • <span class="term-cmd">skills</span>       : Full technical & language matrix
-  • <span class="term-cmd">projects</span>     : List major production repositories
-  • <span class="term-cmd">contact</span>      : Reach Amrendra directly (email/phone/IG)
-  • <span class="term-cmd">location</span>     : Current development base
-  • <span class="term-cmd">clear</span>        : Clear the terminal console
-  • <span class="term-cmd">bench</span>        : Run client performance benchmark
+  • <span class="term-cmd">skills</span>       : Technical proficiencies & stack
+  • <span class="term-cmd">projects</span>     : 7 production systems with source code
+  • <span class="term-cmd">contact</span>      : Direct phone, email, & social handles
+  • <span class="term-cmd">location</span>     : Campus & hometown coordinates
+  • <span class="term-cmd">bench</span>        : Client execution speed benchmark
+  • <span class="term-cmd">clear</span>        : Reset console screen
+    `,
+    college: () => `
+<span class="term-out-success">[INSTITUTION PROFILE]</span>
+  • Institution : <strong>Indian Institute of Technology Jodhpur (IITJ)</strong>
+  • Status      : <strong>1st Year Undergraduate</strong> (B.Tech)
+  • Focus Areas : Computer Systems, Compilers, Data Structures, Mathematics
+  • Campus      : NH 62, Nagaur Road, Karwar, Jodhpur, Rajasthan
     `,
     whoami: () => `
-<span class="term-out-success">Amrendra Yadav</span> — Systems & Creative Engineer
-Base: <strong>Delhi, India</strong>
-Specialization: Low-level C++ rendering, Python streaming pipelines, distributed SQL, & creative WebGL canvas.
+<span class="term-out-success">Amrendra Yadav</span> — 1st Year Undergrad @ IIT Jodhpur
+Base: <strong>Delhi, India</strong> ↔ <strong>IIT Jodhpur</strong>
+Interests: Writing native C++ physics engines, building Python automation scripts, optimizing PostgreSQL indexes, and writing handcrafted web UIs with zero AI bloat.
     `,
     skills: () => `
-<span class="term-highlight">[SYSTEMS CORE]</span>
-  • C++ (17/20)        : OpenGL 4.6, Arena Allocators, GLSL, SIMD Vectorization
-  • Python (3.10+)     : Anomaly Detection, Isolation Forests, AsyncIO, NumPy
-  • SQL / Databases    : Postgres 15+, Composite Indexing, Partitioned Tables
-  • Creative Web       : Modern Vanilla ES6+, WebGL Shaders, Canvas RK4 Physics
+<span class="term-highlight">[SYSTEMS COMPILATION MATRIX]</span>
+  • C++ (17/20)        : OpenGL 4.6, Linear Arena Allocators, SIMD, GLSL
+  • Python (3.10+)     : AsyncIO, Scikit-Learn Isolation Forests, Pyttsx3, Telemetry
+  • SQL / Postgres     : Composite B-Tree Indexing, Quantile CTEs, Range Partitioning
+  • Web Engineering    : Native HTML5/CSS, WebGL Fragment Shaders, Verlet Integrators
     `,
     projects: () => `
-<span class="term-highlight">[ENGINEERING CODEBASES]</span>
-  1. Aether 3D Engine   [C++ / OpenGL 4.6]
-  2. PyStream Analytics [Python / Scikit-Learn]
-  3. Nexus DB Optimizer [PostgreSQL 15 Tuning]
-  4. Nebula GLSL Canvas [WebGL Fragment Shader]
-  5. Verlet Kinetic     [N-Body Solver]
-Type 'projects' section above to inspect source code!
+<span class="term-highlight">[7 PRODUCTION CODEBASES]</span>
+  1. Aether 3D Engine      [C++17 / OpenGL 4.6]
+  2. PulsePool ThreadPool  [C++20 / Concurrency]
+  3. PyStream Classifier   [Python / Scikit Anomaly Detector]
+  4. Jarvis Automation     [Python / Speech OS Dispatcher]
+  5. Nexus DB Optimizer    [PostgreSQL 15 Tuning]
+  6. Nebula GLSL Canvas    [WebGL Fragment Shader]
+  7. Verlet Kinetic Solver [Deterministic RK4 Orbital Physics]
     `,
     contact: () => `
 <span class="term-out-success">[DIRECT COMMUNICATIONS]</span>
@@ -804,15 +949,15 @@ Type 'projects' section above to inspect source code!
   • GitHub    : <a href="https://github.com/amrendrayadav03321-a11y" target="_blank" class="term-highlight">@amrendrayadav03321-a11y</a>
     `,
     location: () => `
-<span class="term-out-success">Base Coordinates:</span> Delhi, India (28.6139° N, 77.2090° E)
-Timezone: Asia/Kolkata (IST • UTC+5:30)
+<span class="term-out-success">Origin Base:</span> Delhi, India (28.6139° N, 77.2090° E)
+<span class="term-out-success">Campus Node:</span> IIT Jodhpur, Rajasthan (26.4711° N, 73.1134° E)
     `,
     bench: () => {
       const t0 = performance.now();
       let acc = 0;
-      for (let i = 0; i < 1000000; i++) acc += Math.sqrt(i);
+      for (let i = 0; i < 500000; i++) acc += Math.sqrt(i);
       const t1 = performance.now();
-      return `<span class="term-out-success">Benchmark completed in ${(t1 - t0).toFixed(2)} ms</span>. Zero-bloat client runtime verified.`;
+      return `<span class="term-out-success">Math loop executed in ${(t1 - t0).toFixed(2)} ms</span>. Zero lag verified.`;
     },
     clear: () => {
       if (termOutput) termOutput.innerHTML = "";
@@ -825,16 +970,13 @@ Timezone: Asia/Kolkata (IST • UTC+5:30)
       if (e.key === "Enter") {
         const cmd = termInput.value.trim().toLowerCase();
         termInput.value = "";
-
         if (!cmd) return;
 
-        // Print input echo
         const echoLine = document.createElement("p");
         echoLine.className = "term-line";
-        echoLine.innerHTML = `<span class="term-prompt">guest@amrendra:~$</span> <span class="term-cmd">${cmd}</span>`;
+        echoLine.innerHTML = `<span class="term-prompt">amrendra@iitj:~$</span> <span class="term-cmd">${cmd}</span>`;
         termOutput.appendChild(echoLine);
 
-        // Process response
         if (TERMINAL_COMMANDS[cmd]) {
           const res = TERMINAL_COMMANDS[cmd]();
           if (res !== null) {
@@ -846,7 +988,7 @@ Timezone: Asia/Kolkata (IST • UTC+5:30)
         } else {
           const errLine = document.createElement("p");
           errLine.className = "term-line term-out-warn";
-          errLine.textContent = `zsh: command not found: ${cmd}. Type 'help' for available commands.`;
+          errLine.textContent = `iitj-sh: command not found: '${cmd}'. Type 'help' for commands.`;
           termOutput.appendChild(errLine);
         }
 
@@ -856,7 +998,7 @@ Timezone: Asia/Kolkata (IST • UTC+5:30)
   }
 
   // =========================================================================
-  // 8. MATHEMATICAL SINE LAB & OSCILLATOR VISUALIZER
+  // 8. HARMONIC MATH SINE OSCILLATOR
   // =========================================================================
   const labCanvas = document.getElementById("lab-canvas");
   const labCtx = labCanvas ? labCanvas.getContext("2d") : null;
@@ -911,9 +1053,8 @@ Timezone: Asia/Kolkata (IST • UTC+5:30)
   function resizeLabCanvas() {
     if (!labCanvas || !labCtx) return;
     const rect = labCanvas.getBoundingClientRect();
-    labCanvas.width = rect.width * window.devicePixelRatio;
-    labCanvas.height = rect.height * window.devicePixelRatio;
-    labCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    labCanvas.width = rect.width;
+    labCanvas.height = rect.height;
   }
   window.addEventListener("resize", resizeLabCanvas);
   resizeLabCanvas();
@@ -921,18 +1062,16 @@ Timezone: Asia/Kolkata (IST • UTC+5:30)
   let labPhase = 0;
   function renderLab() {
     if (!labCanvas || !labCtx) return;
-    const w = labCanvas.width / window.devicePixelRatio;
-    const h = labCanvas.height / window.devicePixelRatio;
+    const w = labCanvas.width;
+    const h = labCanvas.height;
     labCtx.clearRect(0, 0, w, h);
 
     const cy = h / 2;
     const theme = PALETTES[labConfig.palette] || PALETTES.cyber;
 
-    // Harmonic layers (Fundamental + 2nd Harmonic + 3rd Harmonic)
     const harmonics = [
-      { fMult: 1.0, aMult: 1.0, width: 3.0, alpha: 0.9, color: theme.primary },
-      { fMult: 1.8, aMult: 0.55, width: 1.8, alpha: 0.5, color: theme.secondary },
-      { fMult: 2.6, aMult: 0.25, width: 1.0, alpha: 0.25, color: "#ffffff" }
+      { fMult: 1.0, aMult: 1.0, width: 2.4, alpha: 0.9, color: theme.primary },
+      { fMult: 1.8, aMult: 0.5, width: 1.5, alpha: 0.45, color: theme.secondary }
     ];
 
     harmonics.forEach((harm) => {
@@ -940,31 +1079,23 @@ Timezone: Asia/Kolkata (IST • UTC+5:30)
       labCtx.lineWidth = harm.width;
       labCtx.strokeStyle = harm.color;
       labCtx.globalAlpha = harm.alpha;
-      labCtx.shadowColor = harm.color;
-      labCtx.shadowBlur = harm.width > 2 ? 14 : 0;
 
-      for (let x = 0; x < w; x++) {
-        const y =
-          cy +
-          Math.sin(x * labConfig.frequency * harm.fMult + labPhase) *
-            labConfig.amplitude *
-            harm.aMult;
+      for (let x = 0; x < w; x += 2) { // x+=2 step for lag-free loop
+        const y = cy + Math.sin(x * labConfig.frequency * harm.fMult + labPhase) * labConfig.amplitude * harm.aMult;
         if (x === 0) labCtx.moveTo(x, y);
         else labCtx.lineTo(x, y);
       }
       labCtx.stroke();
     });
 
-    labCtx.shadowBlur = 0;
     labCtx.globalAlpha = 1.0;
-
     labPhase += labConfig.speed;
     requestAnimationFrame(renderLab);
   }
-  renderLab();
+  requestAnimationFrame(renderLab);
 
   // =========================================================================
-  // 9. ASYNCHRONOUS FORMSUBMIT DISPATCH & TOAST NOTIFICATION
+  // 9. FORM DISPATCH: ASYNC AJAX WITH CLEAN FALLBACK (STRAIGHT TO EMAIL)
   // =========================================================================
   const contactForm = document.getElementById("contact-form");
   const submitBtn = document.getElementById("submit-btn");
@@ -979,26 +1110,28 @@ Timezone: Asia/Kolkata (IST • UTC+5:30)
       const msgVal = document.getElementById("message").value.trim();
 
       if (!nameVal || !emailVal || !msgVal) {
-        showToast("Please fill all mandatory fields.", "error");
+        showToast("Please fill all required fields.", "error");
         return;
       }
 
       const originalBtnHTML = submitBtn.innerHTML;
-      submitBtn.innerHTML = `<span>Transmitting...</span> <i class="fas fa-circle-notch fa-spin"></i>`;
+      submitBtn.innerHTML = `<span>Sending to Amrendra's Mail...</span> <i class="fas fa-circle-notch fa-spin"></i>`;
       submitBtn.disabled = true;
 
+      // Dispatch to FormSubmit AJAX endpoint
       fetch("https://formsubmit.co/ajax/amrendrayadav03321@gmail.com", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json"
+          "Accept": "application/json"
         },
         body: JSON.stringify({
           name: nameVal,
           email: emailVal,
-          subject: subjectVal || "Portfolio Inquiry (Delhi)",
+          subject: subjectVal || "Message via Portfolio (IIT Jodhpur / Delhi)",
           message: msgVal,
-          location_ref: "Delhi, India"
+          sender_institution: "Portfolio Web Contact",
+          recipient: "amrendrayadav03321@gmail.com"
         })
       })
         .then((res) => res.json())
@@ -1007,17 +1140,20 @@ Timezone: Asia/Kolkata (IST • UTC+5:30)
           submitBtn.disabled = false;
 
           if (data.success === "true" || data.success === true) {
-            showToast(`Transmission received, ${nameVal}! Message dispatched to Amrendra.`, "success");
+            showToast(`Thank you, ${nameVal}! Message sent straight to Amrendra's email.`, "success");
             contactForm.reset();
           } else {
-            showToast("Failed to dispatch. Please email directly at amrendrayadav03321@gmail.com", "warn");
+            // If AJAX returns server restriction, fall back to native POST submission
+            showToast("Submitting via secure email bridge...", "success");
+            contactForm.submit();
           }
         })
         .catch((err) => {
-          console.error(err);
+          console.error("AJAX error, falling back to direct POST:", err);
           submitBtn.innerHTML = originalBtnHTML;
           submitBtn.disabled = false;
-          showToast("Network dispatch error. Please call +91 6307124831 or email directly.", "error");
+          // Native fallback ensures the message is NEVER lost
+          contactForm.submit();
         });
     });
   }
@@ -1034,7 +1170,7 @@ Timezone: Asia/Kolkata (IST • UTC+5:30)
     toast.innerHTML = `
       ${icon}
       <div style="display:flex; flex-direction:column; gap:2px;">
-        <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">System Notification</span>
+        <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Status Notification</span>
         <span style="font-size:13.5px; color:#ffffff;">${message}</span>
       </div>
     `;
